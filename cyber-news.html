@@ -1,0 +1,1387 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Threat Intelligence & Cyber News - CyberShield</title>
+    <meta name="description" content="Access live cybersecurity advisories, data breaches, Zero-Day reports, and threat research feeds." />
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Master dashboard CSS imports -->
+    <link rel="stylesheet" href="/css/dashboard.css">
+    
+    <style>
+      /* --- Dedicated Premium News Portal Styling --- */
+      .news-portal-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding-bottom: 3rem;
+      }
+
+      /* Search & Filter Dock */
+      .news-control-dock {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        padding: 1.5rem;
+        background: rgba(4, 8, 15, 0.45);
+        border: 1px solid var(--border-glass);
+        border-radius: 16px;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: var(--shadow-glass);
+      }
+
+      .news-search-box {
+        position: relative;
+        width: 100%;
+      }
+
+      .news-search-icon {
+        position: absolute;
+        left: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1.2rem;
+        height: 1.2rem;
+        color: var(--text-muted);
+        pointer-events: none;
+      }
+
+      .news-search-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 30px;
+        padding: 0.85rem 1.25rem 0.85rem 3rem;
+        font-family: var(--font-sans);
+        color: #ffffff;
+        font-size: 0.9rem;
+        outline: none;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .news-search-input:focus {
+        border-color: rgba(0, 242, 255, 0.45);
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 0 15px rgba(0, 242, 255, 0.15);
+      }
+
+      /* Filter Horizontal Pill List */
+      .news-filter-scroller {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+        scrollbar-width: none; /* Hide standard Firefox scrollbar */
+      }
+
+      .news-filter-scroller::-webkit-scrollbar {
+        display: none; /* Hide chrome scrollbar */
+      }
+
+      .news-filter-label {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-right: 0.5rem;
+        white-space: nowrap;
+      }
+
+      .filter-chip {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 20px;
+        padding: 0.4rem 0.95rem;
+        color: var(--text-secondary);
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        user-select: none;
+      }
+
+      .filter-chip:hover {
+        background: rgba(0, 242, 255, 0.05);
+        border-color: rgba(0, 242, 255, 0.3);
+        color: var(--neon-cyan);
+        transform: translateY(-1px);
+      }
+
+      .filter-chip.active {
+        background: rgba(0, 242, 255, 0.12);
+        border-color: var(--neon-cyan);
+        color: #ffffff;
+        box-shadow: 0 0 12px rgba(0, 242, 255, 0.25);
+      }
+
+      /* Grid Layout */
+      .news-portal-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+        gap: 1.5rem;
+      }
+
+      /* News Card Design */
+      .news-portal-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        overflow: hidden;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        transform-origin: center;
+      }
+
+      .news-portal-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(0, 242, 255, 0.25);
+        box-shadow: 0 12px 40px rgba(0, 242, 255, 0.12), 0 15px 30px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Media Box */
+      .news-card-media-box {
+        position: relative;
+        width: 100%;
+        height: 12.5rem;
+        background-color: #030712;
+        overflow: hidden;
+      }
+
+      .news-media-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+
+      .news-portal-card:hover .news-media-img {
+        transform: scale(1.05);
+      }
+
+      /* Iframe responsive video player wrapper */
+      .news-video-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      /* Categories & Badges */
+      .news-card-badge-cat {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: rgba(4, 8, 15, 0.8);
+        border: 1px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        padding: 0.25rem 0.65rem;
+        border-radius: 4px;
+        z-index: 5;
+        backdrop-filter: blur(4px);
+        box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+      }
+
+      .news-card-badge-risk {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 0.25rem 0.6rem;
+        border-radius: 4px;
+        z-index: 5;
+        backdrop-filter: blur(4px);
+        border: 1px solid transparent;
+      }
+
+      /* Color states based on severity */
+      .risk-critical {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border-color: #ef4444;
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.35);
+      }
+      .risk-high {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+        border-color: #f59e0b;
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+      }
+      .risk-medium {
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+        border-color: #3b82f6;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.35);
+      }
+      .risk-low {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border-color: #10b981;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);
+      }
+
+      /* Card Content */
+      .news-card-body {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        gap: 0.75rem;
+      }
+
+      .news-card-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--text-muted);
+      }
+
+      .news-meta-divider {
+        width: 3px;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+      }
+
+      .news-card-headline {
+        font-family: var(--font-sans);
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.4;
+        transition: color 0.25s ease;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .news-portal-card:hover .news-card-headline {
+        color: var(--neon-cyan);
+      }
+
+      .news-card-desc {
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        line-height: 1.5;
+        color: var(--text-secondary);
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      /* Bottom Card Toolbar Actions */
+      .news-card-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .news-read-more-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: none;
+        border: none;
+        color: var(--neon-cyan);
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 0.2rem 0;
+        transition: color 0.25s ease;
+      }
+
+      .news-read-more-btn svg {
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .news-read-more-btn:hover {
+        color: #ffffff;
+      }
+
+      .news-read-more-btn:hover svg {
+        transform: translateX(4px);
+      }
+
+      .news-icon-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .news-icon-action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .news-icon-action-btn:hover {
+        background: rgba(0, 242, 255, 0.06);
+        border-color: rgba(0, 242, 255, 0.25);
+        color: var(--neon-cyan);
+        transform: scale(1.08);
+      }
+
+      .news-icon-action-btn.active-bookmark {
+        background: rgba(0, 242, 255, 0.12);
+        border-color: var(--neon-cyan);
+        color: var(--neon-cyan);
+        box-shadow: 0 0 10px rgba(0, 242, 255, 0.25);
+      }
+
+      /* Premium Loading Skeletons with Shimmer Animations */
+      .skeleton-loader {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+        gap: 1.5rem;
+        width: 100%;
+      }
+
+      .shimmer-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        height: 25.5rem;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .shimmer-media {
+        width: 100%;
+        height: 12.5rem;
+        background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%);
+        background-size: 200% 100%;
+        animation: newsShimmer 1.5s infinite linear;
+      }
+
+      .shimmer-content {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+      }
+
+      .shimmer-meta {
+        width: 40%;
+        height: 0.65rem;
+        border-radius: 4px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 75%);
+        background-size: 200% 100%;
+        animation: newsShimmer 1.5s infinite linear;
+      }
+
+      .shimmer-title {
+        width: 90%;
+        height: 1.1rem;
+        border-radius: 4px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 75%);
+        background-size: 200% 100%;
+        animation: newsShimmer 1.5s infinite linear;
+      }
+
+      .shimmer-desc {
+        width: 100%;
+        height: 3.5rem;
+        border-radius: 4px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 75%);
+        background-size: 200% 100%;
+        animation: newsShimmer 1.5s infinite linear;
+      }
+
+      @keyframes newsShimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+
+      /* Error / Retry Display screen */
+      .news-error-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 4rem 2rem;
+        background: rgba(239, 68, 68, 0.02);
+        border: 1px solid rgba(239, 68, 68, 0.12);
+        border-radius: 16px;
+        backdrop-filter: blur(12px);
+        margin: 2rem 0;
+      }
+
+      .error-cyber-icon {
+        width: 4rem;
+        height: 4rem;
+        color: #ef4444;
+        margin-bottom: 1.25rem;
+        filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.3));
+      }
+
+      .error-title {
+        font-family: var(--font-sans);
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+      }
+
+      .error-subtitle {
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        max-width: 25rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .news-retry-btn {
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid #ef4444;
+        color: #ffffff;
+        padding: 0.65rem 1.75rem;
+        border-radius: 30px;
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+      }
+
+      .news-retry-btn:hover {
+        background: #ef4444;
+        transform: translateY(-2px);
+        box-shadow: 0 0 25px rgba(239, 68, 68, 0.45);
+      }
+
+      /* Empty saved / bookmark list */
+      .news-empty-saved {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 5rem 2rem;
+        background: rgba(255, 255, 255, 0.01);
+        border: 1px dashed rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        text-align: center;
+      }
+
+      .empty-saved-icon {
+        width: 3rem;
+        height: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+
+      /* Sidebar highlight override for News */
+      .menu-item[data-target="news"] {
+        background: rgba(0, 242, 255, 0.08) !important;
+        border-color: rgba(0, 242, 255, 0.2) !important;
+        color: var(--neon-cyan) !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Background visual layers -->
+    <div class="soc-bg-image"></div>
+    <div class="soc-overlay"></div>
+    
+    <!-- Ambient color lights -->
+    <div class="glow-node glow-node-1"></div>
+    <div class="glow-node glow-node-2"></div>
+    <div class="glow-node glow-node-3"></div>
+
+    <!-- Active background canvases -->
+    <canvas id="background-canvas"></canvas>
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- Master Grid Wrapper -->
+    <div class="dashboard-wrapper">
+      
+      <!-- TOP NAVIGATION BAR -->
+      <nav class="top-navbar" id="top-navbar">
+        <div class="nav-left">
+          <button class="hamburger-menu-btn" id="hamburger-menu-btn" aria-label="Toggle Navigation Sidebar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          
+          <!-- Modern Professional Back Navigation Button -->
+          <button class="nav-back-btn" id="nav-back-btn" aria-label="Go Back" title="Go Back">
+            <span class="back-btn-content">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="back-icon">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              <span class="back-btn-text">Back</span>
+            </span>
+          </button>
+          
+          <div class="nav-divider"></div>
+
+          <div class="logo-wrapper">
+            <div class="logo-box">
+              <span class="logo-initials">CS</span>
+            </div>
+            <h1 class="logo-text">Cyber<span>Shield</span></h1>
+          </div>
+        </div>
+
+        <div class="nav-right">
+          <!-- Live Time Counter -->
+          <div class="time-widget">
+            <svg class="time-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span class="time-display" id="clock-display">00:00:00 UTC</span>
+          </div>
+
+          <!-- Notification Bell with count -->
+          <div class="notification-widget" id="notification-trigger">
+            <div class="bell-wrapper">
+              <svg class="bell-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              <span class="bell-badge">3</span>
+            </div>
+            <!-- Notification Dropdown -->
+            <div class="dropdown-panel" id="notification-dropdown">
+              <div class="dropdown-header">
+                <span>Active Threat Advisories</span>
+                <button class="clear-notif-btn" id="clear-notif">Acknowledge All</button>
+              </div>
+              <ul class="notification-list">
+                <li class="notif-item unread critical">
+                  <span class="notif-dot"></span>
+                  <div class="notif-body">
+                    <p class="notif-text">Simulated DDoS anomaly flagged on US-EAST corridor.</p>
+                    <span class="notif-time">Just now</span>
+                  </div>
+                </li>
+                <li class="notif-item unread warning">
+                  <span class="notif-dot"></span>
+                  <div class="notif-body">
+                    <p class="notif-text">Daily Security Quiz is waiting. Maintain 100% compliance streak!</p>
+                    <span class="notif-time">10 mins ago</span>
+                  </div>
+                </li>
+                <li class="notif-item info">
+                  <span class="notif-dot"></span>
+                  <div class="notif-body">
+                    <p class="notif-text">System core patched to V.8.22.1 security baseline.</p>
+                    <span class="notif-time">1 hour ago</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- User Profiling -->
+          <div class="user-profile-widget">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Agent Avatar" class="avatar-image" />
+            <div class="user-meta">
+              <span class="user-name">Agent Alice</span>
+              <span class="user-role">SOC SecOps L2</span>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- SIDEBAR + MAIN CONTENT AREA -->
+      <div class="content-container">
+        <!-- Dark overlay behind the sidebar on mobile -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <!-- LEFT CONTROL SIDEBAR -->
+        <aside class="sidebar-container" id="sidebar-container">
+          <div class="sidebar-scrollable">
+            
+            <!-- GROUP 1: ESSENTIAL CORE -->
+            <li class="sidebar-group-title">CONSOLE COMMANDS</li>
+            <ul class="sidebar-menu-list">
+              <li class="menu-item" data-target="dashboard">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/>
+                </svg>
+                <span>Operations Desk</span>
+              </li>
+
+            </ul>
+
+            <!-- GROUP 2: SANDBOX OPERATIONS -->
+            <li class="sidebar-group-title">SANDBOX SYSTEMS</li>
+            <ul class="sidebar-menu-list">
+              <li class="menu-item" data-target="url-checker">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+                <span>URL Safety Checker</span>
+              </li>
+              <li class="menu-item" data-target="password-checker">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <span>Password Strength</span>
+              </li>
+              <li class="menu-item" data-target="file-checker">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+                </svg>
+                <span>File Safety Checker</span>
+              </li>
+              <li class="menu-item" data-target="qr-checker">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="6" height="6"/><rect x="15" y="3" width="6" height="6"/><rect x="3" y="15" width="6" height="6"/><path d="M15 15h1v1h-1zM18 18h1v1h-1zM15 18h1v1h-1zM18 15h1v1h-1zM21 15h1v1h-1zM21 18h1v1h-1zM21 21h1v1h-1zM15 21h1v1h-1zM18 21h1v1h-1z"/>
+                </svg>
+                <span>QR Safety Checker</span>
+              </li>
+              <li class="menu-item" data-target="email-checker">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <span>Email Safety Checker</span>
+              </li>
+            </ul>
+
+            <!-- GROUP 3: LEARNING -->
+            <li class="sidebar-group-title">LEARNING</li>
+            <ul class="sidebar-menu-list">
+              <li class="menu-item" data-target="learning">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+                <span>Learning Center</span>
+              </li>
+              <li class="menu-item" data-target="quiz">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span>Cyber Quiz</span>
+              </li>
+              <li class="menu-item active" data-target="news">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M16 8h2m-6 4h6m-6 4h6M6 8h4v8H6z"/>
+                </svg>
+                <span>Cyber News</span>
+              </li>
+              <li class="menu-item" data-target="phishing">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/>
+                </svg>
+                <span>Phishing Awareness</span>
+              </li>
+            </ul>
+
+            <!-- GROUP 4: ANALYTICS -->
+            <li class="sidebar-group-title">ANALYTICS</li>
+            <ul class="sidebar-menu-list">
+              <li class="menu-item" data-target="reports">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+                </svg>
+                <span>Reports & Analytics</span>
+              </li>
+              <li class="menu-item" data-target="threat-intel">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>
+                </svg>
+                <span>Threat Intelligence</span>
+              </li>
+            </ul>
+
+            <!-- GROUP 5: TEAM -->
+            <li class="sidebar-group-title">ORGANIZATION</li>
+            <ul class="sidebar-menu-list">
+              <li class="menu-item" data-target="team">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>Meet the Team</span>
+              </li>
+              <li class="menu-item" data-target="settings">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                <span>Console Configuration</span>
+              </li>
+            </ul>
+
+            <!-- CORE TERMINATE -->
+            <ul class="sidebar-menu-list logout-section">
+              <li class="menu-item" id="sidebar-logout" data-target="logout">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                <span>Terminate Session</span>
+              </li>
+            </ul>
+
+          </div>
+        </aside>
+
+        <!-- MAIN VIEWPORT DISPLAY -->
+        <main class="viewport-section active-section" style="padding: 1.5rem;" id="news-portal-viewport">
+          <div class="news-portal-container">
+            
+            <!-- Banner Section -->
+            <div class="section-banner-title">
+              <h2 class="viewport-title">📰 Cyber Intelligence News Portal</h2>
+              <p class="viewport-subtitle">Real-time telemetry, zero-day research databases, critical CVE feeds, and proactive awareness alerts.</p>
+            </div>
+
+            <!-- Controls Dock -->
+            <div class="news-control-dock">
+              <!-- Search Bar -->
+              <div class="news-search-box">
+                <svg class="news-search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" class="news-search-input" id="news-search" placeholder="Filter threat bulletins by keyword, CVE token, or source..." />
+              </div>
+
+              <!-- Filter Chips -->
+              <div class="news-filter-scroller">
+                <span class="news-filter-label">Feed Filters:</span>
+                <button class="filter-chip active" data-filter="all">Latest</button>
+                <button class="filter-chip" data-filter="today">Today</button>
+                <button class="filter-chip" data-filter="week">This Week</button>
+                <button class="filter-chip" data-filter="Malware">Malware</button>
+                <button class="filter-chip" data-filter="Ransomware">Ransomware</button>
+                <button class="filter-chip" data-filter="Phishing">Phishing</button>
+                <button class="filter-chip" data-filter="Data Breach">Data Breach</button>
+                <button class="filter-chip" data-filter="Zero-Day">Zero-Day</button>
+                <button class="filter-chip" data-filter="Vulnerability">Vulnerability</button>
+                <button class="filter-chip" data-filter="Government">Government</button>
+                <button class="filter-chip" data-filter="bookmarks" style="border-color: rgba(0, 242, 255, 0.25); color: var(--neon-cyan);">⭐ Bookmarked</button>
+              </div>
+            </div>
+
+            <!-- News Grid or Shimmer Skeletons -->
+            <div id="news-list-container" class="news-portal-grid">
+              <!-- Shimmer Loader Default State -->
+              <div class="skeleton-loader">
+                <div class="shimmer-card">
+                  <div class="shimmer-media"></div>
+                  <div class="shimmer-content">
+                    <div class="shimmer-meta"></div>
+                    <div class="shimmer-title"></div>
+                    <div class="shimmer-desc"></div>
+                  </div>
+                </div>
+                <div class="shimmer-card">
+                  <div class="shimmer-media"></div>
+                  <div class="shimmer-content">
+                    <div class="shimmer-meta"></div>
+                    <div class="shimmer-title"></div>
+                    <div class="shimmer-desc"></div>
+                  </div>
+                </div>
+                <div class="shimmer-card">
+                  <div class="shimmer-media"></div>
+                  <div class="shimmer-content">
+                    <div class="shimmer-meta"></div>
+                    <div class="shimmer-title"></div>
+                    <div class="shimmer-desc"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Master UI Logic driving standard animations, toggles & core clock -->
+    <script type="module">
+      import { fetchCyberNews, escapeHTML } from './js/news-api.js';
+
+      // Global portal states
+      let newsArticles = [];
+      let activeFilter = 'all';
+      let searchQuery = '';
+      let bookmarkedArticles = JSON.parse(localStorage.getItem('cyber_bookmarks') || '[]');
+
+      // 1. Initial State Restoration / Core Navigation Setup
+      document.addEventListener('DOMContentLoaded', () => {
+        initHeaderClock();
+        initSidebarNavRedirects();
+        initNotificationsPanel();
+        initMobileSidebarToggles();
+        initBackNavigationButton();
+        
+        // Fetch & render threat intelligence news
+        loadThreatNewsFeed();
+
+        // Refresh feed automatically every 30 minutes
+        setInterval(() => {
+          console.log("Automatic 30-minute threat news refresh triggered...");
+          loadThreatNewsFeed();
+        }, 30 * 60 * 1000);
+      });
+
+      // Synchronize System UTC clock with top navigation clock
+      function initHeaderClock() {
+        const clock = document.getElementById('clock-display');
+        if (!clock) return;
+        const updateClock = () => {
+          const now = new Date();
+          const utcStr = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+          clock.textContent = utcStr;
+        };
+        updateClock();
+        setInterval(updateClock, 1000);
+      }
+
+      // Re-route dashboard sidebar items
+      function initSidebarNavRedirects() {
+        const sidebarItems = document.querySelectorAll('.menu-item');
+        sidebarItems.forEach(item => {
+          item.addEventListener('click', () => {
+            const target = item.getAttribute('data-target');
+            if (target === 'news') return; // Stay on this page
+            
+            if (target === 'logout') {
+              showGlobalToast('TERMINATING SESSION', 'Revoking crypto certificates and signing out...');
+              setTimeout(() => {
+                window.location.href = 'index.html';
+              }, 1200);
+              return;
+            }
+
+            // Store requested target & transition back
+            showGlobalToast('SOC CROSS-NAVIGATION', `Routing to ${item.querySelector('span').textContent}...`);
+            localStorage.setItem('active_soc_target', target);
+            document.body.classList.add('page-fade-out');
+            setTimeout(() => {
+              window.location.href = 'dashboard.html';
+            }, 350);
+          });
+        });
+      }
+
+      // Notifications overlay trigger
+      function initNotificationsPanel() {
+        const trigger = document.getElementById('notification-trigger');
+        const dropdown = document.getElementById('notification-dropdown');
+        const clearBtn = document.getElementById('clear-notif');
+        const badge = document.querySelector('.bell-badge');
+
+        if (trigger && dropdown) {
+          trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('active');
+          });
+
+          document.addEventListener('click', () => {
+            dropdown.classList.remove('active');
+          });
+
+          dropdown.addEventListener('click', (e) => e.stopPropagation());
+        }
+
+        if (clearBtn) {
+          clearBtn.addEventListener('click', () => {
+            if (badge) badge.style.display = 'none';
+            const unreadItems = document.querySelectorAll('.notif-item.unread');
+            unreadItems.forEach(el => el.classList.remove('unread'));
+            showGlobalToast('ALERTS ACKNOWLEDGED', 'Incident response teams notified.');
+          });
+        }
+      }
+
+      // Responsive Mobile Drawer mechanics
+      function initMobileSidebarToggles() {
+        const hamburger = document.getElementById('hamburger-menu-btn');
+        const sidebar = document.getElementById('sidebar-container');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        if (hamburger && sidebar && overlay) {
+          const toggle = () => {
+            sidebar.classList.toggle('active-sidebar');
+            overlay.classList.toggle('active-overlay');
+          };
+
+          hamburger.addEventListener('click', toggle);
+          overlay.addEventListener('click', toggle);
+        }
+      }
+
+      // premium Back button layout & logic
+      function initBackNavigationButton() {
+        const backBtn = document.getElementById('nav-back-btn');
+        if (!backBtn) return;
+
+        backBtn.addEventListener('click', (e) => {
+          // Dynamic ripple feedback
+          const rect = backBtn.getBoundingClientRect();
+          const ripple = document.createElement('span');
+          ripple.className = 'back-ripple-effect';
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          ripple.style.left = `${x}px`;
+          ripple.style.top = `${y}px`;
+          backBtn.appendChild(ripple);
+          setTimeout(() => ripple.remove(), 600);
+
+          // Transition and redirect
+          document.body.classList.add('page-fade-out');
+          setTimeout(() => {
+            const referrer = document.referrer;
+            if (referrer && referrer.indexOf(window.location.host) !== -1) {
+              window.history.back();
+            } else {
+              window.location.href = 'dashboard.html';
+            }
+          }, 300);
+        });
+      }
+
+      // Global Notification Toast
+      function showGlobalToast(title, msg) {
+        // Look for existing toast container, or append one
+        let container = document.getElementById('global-toast-container');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'global-toast-container';
+          container.style.position = 'fixed';
+          container.style.bottom = '2rem';
+          container.style.right = '2rem';
+          container.style.zIndex = '9999';
+          container.style.display = 'flex';
+          container.style.flexDirection = 'column';
+          container.style.gap = '0.75rem';
+          document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.style.background = 'rgba(4, 8, 15, 0.85)';
+        toast.style.border = '1px solid rgba(0, 242, 255, 0.3)';
+        toast.style.boxShadow = '0 0 15px rgba(0, 242, 255, 0.2), 0 4px 15px rgba(0,0,0,0.5)';
+        toast.style.borderRadius = '8px';
+        toast.style.padding = '1rem';
+        toast.style.width = '20rem';
+        toast.style.backdropFilter = 'blur(10px)';
+        toast.style.transform = 'translateY(20px)';
+        toast.style.opacity = '0';
+        toast.style.transition = 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
+
+        toast.innerHTML = `
+          <div style="font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--neon-cyan); letter-spacing: 0.05em; margin-bottom: 0.25rem;">[ ${title} ]</div>
+          <div style="font-family: var(--font-sans); font-size: 0.8rem; color: #ffffff;">${msg}</div>
+        `;
+
+        container.appendChild(toast);
+        requestAnimationFrame(() => {
+          toast.style.transform = 'translateY(0)';
+          toast.style.opacity = '1';
+        });
+
+        setTimeout(() => {
+          toast.style.transform = 'translateY(-20px)';
+          toast.style.opacity = '0';
+          setTimeout(() => toast.remove(), 400);
+        }, 4000);
+      }
+
+      // 2. Cyber Threat News Core Controller
+      async function loadThreatNewsFeed() {
+        const grid = document.getElementById('news-list-container');
+        if (!grid) return;
+
+        // Render shimmering loaders first
+        grid.innerHTML = `
+          <div class="shimmer-card"><div class="shimmer-media"></div><div class="shimmer-content"><div class="shimmer-meta"></div><div class="shimmer-title"></div><div class="shimmer-desc"></div></div></div>
+          <div class="shimmer-card"><div class="shimmer-media"></div><div class="shimmer-content"><div class="shimmer-meta"></div><div class="shimmer-title"></div><div class="shimmer-desc"></div></div></div>
+          <div class="shimmer-card"><div class="shimmer-media"></div><div class="shimmer-content"><div class="shimmer-meta"></div><div class="shimmer-title"></div><div class="shimmer-desc"></div></div></div>
+        `;
+
+        try {
+          // Fetch compiled, prioritized news collection
+          newsArticles = await fetchCyberNews();
+          renderArticles();
+          setupInteractiveControls();
+
+        } catch (error) {
+          console.error("News Portal Loading Failure:", error);
+          grid.innerHTML = `
+            <div class="news-error-screen" style="grid-column: 1 / -1;">
+              <svg class="error-cyber-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+              <h4 class="error-title">Cyber News is temporarily unavailable.</h4>
+              <p class="error-subtitle">The secure threat intelligence parser encountered an issue. Please verify network interfaces and try again.</p>
+              <button class="news-retry-btn" id="retry-news-btn">Retry</button>
+            </div>
+          `;
+
+          const retryBtn = document.getElementById('retry-news-btn');
+          if (retryBtn) {
+            retryBtn.addEventListener('click', loadThreatNewsFeed);
+          }
+        }
+      }
+
+      // Setup Search inputs & Filter Pill selectors
+      function setupInteractiveControls() {
+        const searchInput = document.getElementById('news-search');
+        const filterChips = document.querySelectorAll('.filter-chip');
+
+        if (searchInput) {
+          // Listen for title search keyword inputs
+          searchInput.removeEventListener('input', onSearchInput);
+          searchInput.addEventListener('input', onSearchInput);
+        }
+
+        filterChips.forEach(chip => {
+          chip.removeEventListener('click', onFilterClick);
+          chip.addEventListener('click', onFilterClick);
+        });
+      }
+
+      function onSearchInput(e) {
+        searchQuery = e.target.value.toLowerCase().trim();
+        renderArticles();
+      }
+
+      function onFilterClick(e) {
+        const filterChips = document.querySelectorAll('.filter-chip');
+        filterChips.forEach(c => c.classList.remove('active'));
+        
+        const chip = e.currentTarget;
+        chip.classList.add('active');
+        activeFilter = chip.getAttribute('data-filter');
+        renderArticles();
+      }
+
+      // Render the filtered cards collection
+      function renderArticles() {
+        const grid = document.getElementById('news-list-container');
+        if (!grid) return;
+
+        // Apply search-by-title and category filters
+        let filtered = newsArticles.filter(art => {
+          // 1. Text Search matches by title only
+          const matchesSearch = !searchQuery || art.title.toLowerCase().includes(searchQuery);
+
+          if (!matchesSearch) return false;
+
+          // 2. Chip Filter matches
+          if (activeFilter === 'all') return true;
+          if (activeFilter === 'bookmarks') {
+            return bookmarkedArticles.some(saved => saved.title === art.title);
+          }
+          if (activeFilter === 'today') {
+            const oneDay = 24 * 60 * 60 * 1000;
+            return (Date.now() - art.pubDateTimestamp) < oneDay;
+          }
+          if (activeFilter === 'week') {
+            const oneWeek = 7 * 24 * 60 * 60 * 1000;
+            return (Date.now() - art.pubDateTimestamp) < oneWeek;
+          }
+          
+          return art.category.toLowerCase() === activeFilter.toLowerCase();
+        });
+
+        if (filtered.length === 0) {
+          if (activeFilter === 'bookmarks') {
+            grid.innerHTML = `
+              <div class="news-empty-saved">
+                <svg class="empty-saved-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499c.168-.534.894-.534 1.062 0l2.124 6.75a1.104 1.104 0 001.018.742h7.098c.559 0 .792.724.34 1.07l-5.743 4.46a1.105 1.105 0 00-.395 1.218l2.124 6.75c.168.534-.442 1.01-.89 1.01a1.105 1.105 0 00-.395-.121l-5.743-4.46a1.105 1.105 0 00-1.218 0l-5.743 4.46a1.105 1.105 0 00-.395.121c-.448 0-1.058-.476-.89-1.01l2.124-6.75a1.105 1.105 0 00-.395-1.218l-5.743-4.46c-.452-.346-.219-1.07.34-1.07h7.098a1.104 1.104 0 001.018-.742l2.124-6.75z" />
+                </svg>
+                <h5 style="color: #ffffff; font-family: var(--font-sans); font-weight: 600; margin-bottom: 0.25rem;">No Bookmarks Saved</h5>
+                <p style="color: var(--text-muted); font-size: 0.8rem; max-width: 20rem;">Click the ⭐ star icon on news cards to bookmark critical briefings.</p>
+              </div>
+            `;
+          } else {
+            grid.innerHTML = `
+              <div class="news-empty-saved">
+                <svg class="empty-saved-icon" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637z" />
+                </svg>
+                <h5 style="color: #ffffff; font-family: var(--font-sans); font-weight: 600; margin-bottom: 0.25rem;">No matching articles found</h5>
+                <p style="color: var(--text-muted); font-size: 0.8rem; max-width: 20rem;">Try refining search query terms, applying other filter category options.</p>
+              </div>
+            `;
+          }
+          return;
+        }
+
+        grid.innerHTML = "";
+        filtered.forEach((art, idx) => {
+          const isSaved = bookmarkedArticles.some(saved => saved.title === art.title);
+          const card = document.createElement('div');
+          card.className = "news-portal-card";
+          card.setAttribute('data-id', idx);
+
+          // Build dynamic risk badge class
+          let riskClass = 'risk-low';
+          if (art.riskLevel === 'CRITICAL') riskClass = 'risk-critical';
+          else if (art.riskLevel === 'HIGH') riskClass = 'risk-high';
+          else if (art.riskLevel === 'MEDIUM') riskClass = 'risk-medium';
+
+          // Escape values to prevent XSS
+          const safeTitle = escapeHTML(art.title);
+          const safeDesc = escapeHTML(art.description);
+          const safeCategory = escapeHTML(art.category);
+          const safeRisk = escapeHTML(art.riskLevel);
+          const safeSource = escapeHTML(art.source);
+          const safeDate = escapeHTML(art.pubDate);
+          const safeAuthor = escapeHTML(art.author);
+          const safeLink = escapeHTML(art.link);
+          const safeImage = (art.image && art.image.startsWith('http')) ? escapeHTML(art.image) : '';
+          const safeVideo = (art.videoUrl && art.videoUrl.startsWith('http')) ? escapeHTML(art.videoUrl) : '';
+
+          // Embed media player or cover image
+          let mediaElement = `<img src="${safeImage}" class="news-media-img" loading="lazy" alt="${safeTitle}" referrerPolicy="no-referrer">`;
+          if (safeVideo) {
+            mediaElement = `
+              <iframe 
+                class="news-video-frame" 
+                src="${safeVideo}" 
+                title="${safeTitle}" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+              </iframe>`;
+          }
+
+          card.innerHTML = `
+            <div class="news-card-media-box">
+              <span class="news-card-badge-cat">${safeCategory}</span>
+              <span class="news-card-badge-risk ${riskClass}">${safeRisk}</span>
+              ${mediaElement}
+            </div>
+            <div class="news-card-body">
+              <div class="news-card-meta">
+                <span>Source: ${safeSource}</span>
+                <span class="news-meta-divider"></span>
+                <span>${safeDate}</span>
+                ${safeAuthor ? `<span class="news-meta-divider"></span><span>By ${safeAuthor}</span>` : ''}
+              </div>
+              <h3 class="news-card-headline" title="${safeTitle}">${safeTitle}</h3>
+              <p class="news-card-desc">${safeDesc}</p>
+              <div class="news-card-actions">
+                <button class="news-read-more-btn" onclick="window.open('${safeLink}', '_blank', 'noopener,noreferrer')">
+                  Read More
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </button>
+                <div class="news-icon-group">
+                  <button class="news-icon-action-btn ${isSaved ? 'active-bookmark' : ''}" data-action="bookmark" title="${isSaved ? 'Remove Bookmark' : 'Bookmark Briefing'}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="${isSaved ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.5">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </button>
+                  <button class="news-icon-action-btn" data-action="share" title="Copy News Link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+
+          // Setup dynamic interaction triggers for Bookmark and Share inside the card
+          const bookmarkBtn = card.querySelector('[data-action="bookmark"]');
+          const shareBtn = card.querySelector('[data-action="share"]');
+
+          bookmarkBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleBookmark(art, bookmarkBtn);
+          });
+
+          shareBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            copyShareLink(art);
+          });
+
+          grid.appendChild(card);
+        });
+      }
+
+      // Add or remove bookmark from client memory
+      function toggleBookmark(art, btn) {
+        const index = bookmarkedArticles.findIndex(saved => saved.title === art.title);
+        
+        if (index === -1) {
+          bookmarkedArticles.push(art);
+          btn.classList.add('active-bookmark');
+          btn.querySelector('svg').setAttribute('fill', 'currentColor');
+          showGlobalToast('BRIEFING BOOKMARKED', 'Stored in secure offline database cache.');
+        } else {
+          bookmarkedArticles.splice(index, 1);
+          btn.classList.remove('active-bookmark');
+          btn.querySelector('svg').setAttribute('fill', 'none');
+          showGlobalToast('BOOKMARK REVOKED', 'Briefing removed from cache.');
+        }
+
+        localStorage.setItem('cyber_bookmarks', JSON.stringify(bookmarkedArticles));
+        
+        // If currently viewing bookmarked list, re-render immediately
+        if (activeFilter === 'bookmarks') {
+          renderArticles();
+        }
+      }
+
+      // Clipboard link copy trigger
+      function copyShareLink(art) {
+        const shareUrl = art.link;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          showGlobalToast('LINK COPIED', 'External threat report URL copied to system clipboard.');
+        }).catch(() => {
+          showGlobalToast('EXTERNAL SOURCE', `Report Link: ${shareUrl}`);
+        });
+      }
+    </script>
+    
+    <!-- Matrix Particle Engine background animation scripts -->
+    <script>
+      // Matrix Rain Digital Canvas effect mimicking dashboard setup
+      (function() {
+        const canvas = document.getElementById('matrix-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZセキュリティハッカーサイバー';
+        const fontSize = 14;
+        const columns = Math.floor(width / fontSize);
+        const drops = Array(columns).fill(1);
+
+        function drawMatrix() {
+          ctx.fillStyle = 'rgba(3, 7, 18, 0.08)';
+          ctx.fillRect(0, 0, width, height);
+
+          ctx.fillStyle = 'rgba(0, 242, 255, 0.35)';
+          ctx.font = fontSize + 'px monospace';
+
+          for (let i = 0; i < drops.length; i++) {
+            const char = chars.charAt(Math.floor(Math.random() * chars.length));
+            const x = i * fontSize;
+            const y = drops[i] * fontSize;
+
+            // Highlight leading droplet with cyan
+            if (Math.random() > 0.98) {
+              ctx.fillStyle = '#ffffff';
+            } else {
+              ctx.fillStyle = 'rgba(0, 242, 255, 0.2)';
+            }
+
+            ctx.fillText(char, x, y);
+
+            if (y > height && Math.random() > 0.975) {
+              drops[i] = 0;
+            }
+            drops[i]++;
+          }
+        }
+
+        let matrixInterval = setInterval(drawMatrix, 35);
+
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+          const cols = Math.floor(width / fontSize);
+          while(drops.length < cols) drops.push(1);
+        });
+      })();
+
+      // Ambient particle network canvas
+      (function() {
+        const canvas = document.getElementById('background-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const particles = [];
+        const count = 30;
+
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 0.5) * 0.4,
+            r: Math.random() * 2 + 1
+          });
+        }
+
+        function drawParticles() {
+          ctx.clearRect(0, 0, width, height);
+          ctx.fillStyle = 'rgba(0, 242, 255, 0.15)';
+          ctx.strokeStyle = 'rgba(0, 242, 255, 0.05)';
+
+          particles.forEach((p, index) => {
+            p.x += p.vx;
+            p.y += p.vy;
+
+            if (p.x < 0 || p.x > width) p.vx *= -1;
+            if (p.y < 0 || p.y > height) p.vy *= -1;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+
+            for (let j = index + 1; j < particles.length; j++) {
+              const p2 = particles[j];
+              const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+              if (dist < 150) {
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+              }
+            }
+          });
+          requestAnimationFrame(drawParticles);
+        }
+        requestAnimationFrame(drawParticles);
+      })();
+    </script>
+  </body>
+</html>

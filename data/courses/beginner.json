@@ -1,0 +1,652 @@
+[
+  {
+    "id": "intro-cyber",
+    "title": "Introduction to Cyber Security",
+    "chapter": {
+      "title": "Chapter 1: The Foundations of Security Operations",
+      "explanation": "Cybersecurity is the practice of protecting critical computer networks, servers, data repositories, and digital identities from hostile state actors, ransomware syndicates, and digital espionage. At its core, defensive cybersecurity centers around preserving the CIA Triad (Confidentiality, Integrity, and Availability). Understanding security models is the first crucial step toward establishing robust protective boundaries.",
+      "diagram": "      ┌──────────────────────────────────┐\n      │            CIA TRIAD             │\n      └────┬────────────┬────────────┬───┘\n           │            │            │\n ┌─────────▼───┐  ┌─────▼─────┐  ┌───▼─────────┐\n │Confidential │  │ Integrity │  │Availability │\n │ (Encryption)│  │ (Hashing) │  │ (Redundancy)│\n └─────────────┘  └───────────┘  └─────────────┘",
+      "definitions": {
+        "CIA Triad": "A foundational security model of three key principles: Confidentiality (secrecy), Integrity (trustworthiness of data), and Availability (reliable access).",
+        "Threat Actor": "An individual or group that performs malicious actions targeting digital systems with the intent to compromise data or infrastructure."
+      },
+      "examples": [
+        "Confidentiality: Using AES-256 encryption to protect password databases.",
+        "Integrity: Implementing SHA-256 checksums to verify downloaded file integrity.",
+        "Availability: Deploying dual-site redundant servers to prevent DDoS disruption."
+      ],
+      "realWorldExample": "In 2017, the NotPetya cyber attack crippled global logistics networks by destroying data integrity. It masqueraded as ransomware but was designed to destroy master boot records, permanently rendering systems unavailable and causing billions of dollars in losses.",
+      "notes": [
+        "A breach in any single leg of the CIA Triad completely undermines the reliability of the entire system.",
+        "Security must always be applied in layers (Defense-in-Depth) rather than relying on a single defensive control."
+      ],
+      "tips": [
+        "For exam purposes, remember that encryption guarantees confidentiality, hashing guarantees integrity, and backups or load-balancers guarantee availability."
+      ],
+      "summary": "The CIA Triad dictates that data must be kept private (Confidentiality), remain unaltered (Integrity), and be readily accessible to authorized parties (Availability)."
+    },
+    "quiz": {
+      "question": "Which security core principle is violated when a ransomware attacker encrypts critical system data and demands a payout to restore access?",
+      "options": [
+        "Confidentiality",
+        "Integrity",
+        "Availability",
+        "Non-repudiation"
+      ],
+      "answer": 2,
+      "explanation": "By locking access to files, the attacker violates Availability. (Note: It also compromises Integrity, but the primary disruption of services is an Availability issue)."
+    }
+  },
+  {
+    "id": "comp-fundamentals",
+    "title": "Computer Fundamentals",
+    "chapter": {
+      "title": "Chapter 2: Hardware, CPU Registers, & Memory Layout",
+      "explanation": "Defensive security begins with understanding how programs execute in hardware. The Central Processing Unit (CPU) executes binary instructions by fetching them from Random Access Memory (RAM) into fast internal storage units called registers. Operating systems partition memory into specific regions, notably the Stack (grows downward, manages function frames) and the Heap (dynamic, runtime-allocated memory). Attackers frequently exploit these mechanisms to bypass administrative boundaries.",
+      "diagram": "  [CPU CORE] ──── Registers (EIP, ESP, EBP)\n      │\n  [L1/L2 CACHE]\n      │\n  [SYSTEM RAM] ── [ High Memory Addresses ]\n                  │   - Stack (Local variables)\n                  │       ▼ (grows down)\n                  │   - Shared Libraries\n                  │       ▲ (grows up)\n                  │   - Heap (Dynamic allocations)\n                  │   - BSS & Data Segment\n                  │   - Text Segment (Code instructions)\n                  [ Low Memory Addresses ]",
+      "definitions": {
+        "Stack Pointer (ESP)": "A CPU register that points directly to the top address of the currently executing stack frame.",
+        "Instruction Pointer (EIP)": "A vital CPU register containing the address of the next binary instruction scheduled for execution."
+      },
+      "examples": [
+        "EIP Hijacking: Overwriting the Instruction Pointer to point to malicious shellcode.",
+        "Heap Allocation: Utilizing malloc() in C to allocate buffer space dynamically during execution."
+      ],
+      "realWorldExample": "Buffer overflow attacks, such as those targeting legacy system services, overwrite buffer arrays on the Stack, leaking into the EBP and EIP registers, allowing hackers to execute arbitrary shellcode with system-level privileges.",
+      "notes": [
+        "Modern operating systems deploy protections like NX (No-Execute) bits and ASLR (Address Space Layout Randomization) to mitigate hardware memory exploits."
+      ],
+      "tips": [
+        "Remember that Stack allocation is fast and managed automatically, whereas Heap allocations are manual, slower, and prone to memory leaks."
+      ],
+      "summary": "Hardware processes instructions linearly through CPU registers. Proper memory protection prevents exploits from executing arbitrary code."
+    },
+    "quiz": {
+      "question": "Which CPU register contains the exact address of the next system instruction to execute, making it a primary target for buffer overflow exploitation?",
+      "options": [
+        "ESP (Stack Pointer)",
+        "EBP (Base Pointer)",
+        "EIP (Instruction Pointer)",
+        "EAX (Accumulator Register)"
+      ],
+      "answer": 2,
+      "explanation": "The EIP (Instruction Pointer) tells the CPU what to execute next. Controlling EIP means controlling the program flow."
+    }
+  },
+  {
+    "id": "net-basics",
+    "title": "Network Basics",
+    "chapter": {
+      "title": "Chapter 3: Switched Ethernet, Routers, & Protocols",
+      "explanation": "A network is a collection of interconnected devices communicating via structured digital standards. In local Area Networks (LANs), Ethernet switches use Media Access Control (MAC) addresses to deliver local data frames. To cross networks, Routers process Layer 3 packet headers to forward data across the internet. Managing security requires understanding how packets flow across these domains.",
+      "diagram": " [Host A] ───► [Switch] ───► [Router A] ───► [WAN / Internet] ───► [Router B]\n  (MAC A)       (Layer 2)      (Gateway)                                 (Remote)",
+      "definitions": {
+        "MAC Address": "A permanent, 48-bit physical address burned into network interface cards (NIC) to identify local hosts.",
+        "Router": "A Layer 3 network device that routes IP packets between distinct logical networks."
+      },
+      "examples": [
+        "ARP Spoofing: Forging ARP mapping messages to redirect switched traffic to an eavesdropper.",
+        "Gateway Routing: Forwarding a packet destined for public internet to the default gateway router."
+      ],
+      "realWorldExample": "A retail warehouse network switch was compromised by attackers who mapped MAC addresses, performed ARP spoofing, and intercepted credit card terminal transmissions in transit to the payment gateway.",
+      "notes": [
+        "Switches direct traffic to specific ports based on MAC tables, but they are vulnerable to MAC table flooding, which forces them into 'hub' mode."
+      ],
+      "tips": [
+        "MAC addresses operate on Layer 2 (Data Link) of local networks, while IP addresses operate on Layer 3 (Network) for worldwide routing."
+      ],
+      "summary": "Local traffic relies on MAC physical addresses. Routed traffic crosses networks using logical IP addresses."
+    },
+    "quiz": {
+      "question": "At which layer of the network stack does an Ethernet Switch primarily operate to deliver data frames using MAC physical addresses?",
+      "options": [
+        "Layer 1 - Physical",
+        "Layer 2 - Data Link",
+        "Layer 3 - Network",
+        "Layer 4 - Transport"
+      ],
+      "answer": 1,
+      "explanation": "Switches read MAC addresses, which operate on Layer 2 (Data Link). Routers operate on Layer 3 (Network) using IP addresses."
+    }
+  },
+  {
+    "id": "osi-model",
+    "title": "OSI Model",
+    "chapter": {
+      "title": "Chapter 4: The Seven Layers of Interoperability",
+      "explanation": "The Open Systems Interconnection (OSI) model standardizes network communications into seven logical layers. Each layer has specific responsibilities, framing headers, and defensive boundaries. By standardizing communication, network vendors and security analysts can segment network processes and secure individual levels against distinct vector attacks.",
+      "diagram": "┌──────────────────────────────────────────────┐\n│ L7: APPLICATION   (HTTP, DNS, SSH)           │\n├──────────────────────────────────────────────┤\n│ L6: PRESENTATION  (Encryption, SSL/TLS, JSON)│\n├──────────────────────────────────────────────┤\n│ L5: SESSION       (NetBIOS, Sockets)         │\n├──────────────────────────────────────────────┤\n│ L4: TRANSPORT     (TCP, UDP - Port numbers)  │\n├──────────────────────────────────────────────┤\n│ L3: NETWORK       (IP Packets - Routers)     │\n├──────────────────────────────────────────────┤\n│ L2: DATA LINK     (MAC Frames - Switches)    │\n├──────────────────────────────────────────────┤\n│ L1: PHYSICAL      (Ethernet Cables, Fibers)  │\n└──────────────────────────────────────────────┘",
+      "definitions": {
+        "OSI Model": "An architectural model created by ISO consisting of 7 distinct layers describing system-to-system data transfer.",
+        "Encapsulation": "The process where upper-layer data is wrapped with control headers as it moves down the network stack."
+      },
+      "examples": [
+        "Layer 4 Defense: Firewalls blocking inbound port scans on TCP Port 22.",
+        "Layer 7 Attack: SQL Injection occurring inside the body of an HTTP application packet."
+      ],
+      "realWorldExample": "Traditional firewalls only inspected Layer 3 and Layer 4 headers (IP and Port numbers). Modern Next-Generation Firewalls (NGFW) perform Deep Packet Inspection up to Layer 7, letting them detect application-layer exploits like SQL injection or malformed HTTP requests.",
+      "notes": [
+        "Remember the mnemonic: 'All People Seem To Need Data Processing' or 'Please Do Not Throw Sausage Pizza Away'."
+      ],
+      "tips": [
+        "SSL/TLS can span Layers 5 and 6, but is typically categorized at Layer 6 (Presentation) because it negotiates encryption formats."
+      ],
+      "summary": "The OSI Model divides network communication into seven layers, from Physical cables up to client Applications."
+    },
+    "quiz": {
+      "question": "Which layer of the OSI Model is responsible for encrypting data, compression, and transforming file formats (such as converting JSON to binary streams)?",
+      "options": [
+        "Session Layer (Layer 5)",
+        "Presentation Layer (Layer 6)",
+        "Application Layer (Layer 7)",
+        "Transport Layer (Layer 4)"
+      ],
+      "answer": 1,
+      "explanation": "Layer 6 (Presentation) is responsible for syntax, data formatting, translation, and encryption/decryption."
+    }
+  },
+  {
+    "id": "tcp-ip",
+    "title": "TCP/IP Suite",
+    "chapter": {
+      "title": "Chapter 5: Transmission Control & User Datagram Protocols",
+      "explanation": "The internet runs on the TCP/IP suite, which compresses the OSI model into four practical layers: Link, Internet, Transport, and Application. The Transport layer is dominated by two protocols: Transmission Control Protocol (TCP), which is connection-oriented, reliable, and uses a three-way handshake; and User Datagram Protocol (UDP), which is connectionless, fast, and lightweight.",
+      "diagram": "       [TCP THREE-WAY HANDSHAKE]\n  Client                     Server\n    │                         │\n    ├─────── SYN (Seq=X) ────►│\n    │                         │\n    │◄────── SYN-ACK ─────────┤ (Seq=Y, Ack=X+1)\n    │                         │\n    ├─────── ACK (Ack=Y+1) ──►│\n    │                         │\n    └─[ Connection Established ]",
+      "definitions": {
+        "TCP Three-Way Handshake": "The SYN, SYN-ACK, ACK handshake sequence that builds reliable bidirectional streams between hosts.",
+        "UDP (User Datagram Protocol)": "A stateless transport protocol that prioritizes speed over receipt confirmation, ideal for streaming."
+      },
+      "examples": [
+        "SYN Flood Attack: Bombarding a target server with millions of SYN requests to exhaust its connection queues.",
+        "DNS Queries: DNS typically uses UDP Port 53 to resolve domains within milliseconds."
+      ],
+      "realWorldExample": "SYN Flood DDoS attacks exploit the TCP handshake. Attackers send millions of SYN packets but never respond to the returned SYN-ACKs, forcing the victim server to allocate memory buffers for incomplete handshakes until it runs out of memory.",
+      "notes": [
+        "TCP provides flow control, sequencing, and packet error checking, whereas UDP provides zero congestion control or packet-ordering."
+      ],
+      "tips": [
+        "Remember: TCP is for accuracy (web pages, files, emails); UDP is for speed (video chats, online gaming, DNS resolutions)."
+      ],
+      "summary": "TCP secures reliable connections via handshakes. UDP transmits raw datagrams without state checks for peak speed."
+    },
+    "quiz": {
+      "question": "What is the correct order of packet flags transmitted during a standard TCP connection handshake?",
+      "options": [
+        "SYN -> ACK -> SYN-ACK",
+        "SYN -> SYN-ACK -> ACK",
+        "SYN -> FIN -> ACK",
+        "RST -> SYN -> ACK"
+      ],
+      "answer": 1,
+      "explanation": "The standard TCP handshake sequence is SYN (synchronize), SYN-ACK (synchronize-acknowledge), and ACK (acknowledge)."
+    }
+  },
+  {
+    "id": "ip-address",
+    "title": "IP Addressing & Subnetting",
+    "chapter": {
+      "title": "Chapter 6: IPv4, IPv6, & Network Segregation",
+      "explanation": "An Internet Protocol (IP) address is a unique numerical label assigned to each device on a network. IPv4 addresses are 32-bit values commonly formatted as dotted decimals (e.g. 192.168.1.10). IPv6 addresses are 128-bit hexadecimal strings, resolving address exhaustion. Subnetting uses netmasks to divide local networks into smaller logical subnets to isolate assets and restrict threat propagation.",
+      "diagram": "  IP:     192.168.1.50   ->  11000000.10101000.00000001.00110010\n  Mask:   255.255.255.0  ->  11111111.11111111.11111111.00000000\n          └───────────┘      └────────────────────────┘\n          Network Segment          Subnet/Network bits\n                             Hosts: 192.168.1.1 through 192.168.1.254",
+      "definitions": {
+        "Subnet Mask": "A 32-bit mask used to separate an IPv4 address into network host parts.",
+        "CIDR Notation": "Classless Inter-Domain Routing (e.g., /24), indicating how many bits of the address represent the network part."
+      },
+      "examples": [
+        "RFC 1918 Private Addresses: 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16 cannot be routed on the public internet.",
+        "Subnet Segregation: Restricting public web servers into a DMZ subnet (e.g. 10.0.2.0/24) separate from active staff desktops."
+      ],
+      "realWorldExample": "In many commercial networks, guest Wi-Fi and corporate accounting run on the same address space. Segmenting them into isolated subnets with strict firewall rules prevents guest device infections from pivoting into sensitive corporate file shares.",
+      "notes": [
+        "A /24 subnet has 256 addresses, but only 254 are usable for host nodes (the first is the Network ID, and the last is the Broadcast address)."
+      ],
+      "tips": [
+        "To find the number of hosts in a CIDR subnet, calculate 2^(32 - CIDR) - 2. For example, a /24 subnet allows 2^(32-24) - 2 = 254 hosts."
+      ],
+      "summary": "IP addresses route packets globally. Subnetting isolates assets locally, restricting hacker lateral movement."
+    },
+    "quiz": {
+      "question": "How many usable IP addresses are available for active network host devices in a standard /24 CIDR subnet?",
+      "options": [
+        "256",
+        "255",
+        "254",
+        "128"
+      ],
+      "answer": 2,
+      "explanation": "A /24 subnet has 2^8 = 256 total addresses. Subnetting reserves 2 addresses (network address and broadcast address), leaving 254 usable hosts."
+    }
+  },
+  {
+    "id": "dns-basics",
+    "title": "Domain Name System (DNS)",
+    "chapter": {
+      "title": "Chapter 7: Resolvers, Root Servers, & DNS Attacks",
+      "explanation": "The Domain Name System (DNS) is the phonebook of the internet, resolving human-readable domain names (e.g., cybershield.org) into numerical IP addresses. When a request is made, a local DNS resolver queries DNS Root Servers, Top-Level Domain (TLD) servers, and authoritative Nameservers in a recursive chain. Because DNS lacks default encryption, it is a frequent target for redirects, spoofing, and data exfiltration.",
+      "diagram": "  [Browser] ────► [Local Resolver] ────► [Root Server (.)]\n     ▲                   │\n     └─ Resolved IP ◄────┼──────────────► [TLD Nameserver (.com)]\n                         │\n                         └──────────────► [Authoritative DNS]",
+      "definitions": {
+        "A Record": "A DNS record mapping a hostname directly to an IPv4 address.",
+        "DNS Cache Poisoning": "Exploiting resolver vulnerabilities to inject fake IP records, routing users to malicious sites."
+      },
+      "examples": [
+        "TXT Record: Used to declare security directives like SPF or DMARC records for mail servers.",
+        "DNS over HTTPS (DoH) : Securing DNS queries by wrapping them inside encrypted HTTPS tunnels."
+      ],
+      "realWorldExample": "During a high-profile DNS hijacking incident, hackers gained access to a domain registrar and updated the authoritative NS records of a bank. Visitors were silently routed to an identical cloned phishing portal hosted on a malicious server.",
+      "notes": [
+        "Securing DNS requires DNSSEC, which signs DNS records cryptographically to prevent tampering."
+      ],
+      "tips": [
+        "Always monitor DNS log anomalies, such as high-volume TXT requests, which often indicate malware utilizing DNS tunneling for command and control."
+      ],
+      "summary": "DNS maps names to IP addresses. Legacy DNS is unencrypted; secure it with DNSSEC, DoH, or DoT."
+    },
+    "quiz": {
+      "question": "Which DNS record type is primarily responsible for mapping a human-readable domain name to an IPv4 address?",
+      "options": [
+        "MX Record",
+        "CNAME Record",
+        "A Record",
+        "TXT Record"
+      ],
+      "answer": 2,
+      "explanation": "An 'A' (Address) record maps hostnames to IPv4 addresses. 'AAAA' records map to IPv6 addresses."
+    }
+  },
+  {
+    "id": "http-protocol",
+    "title": "HTTP Protocol",
+    "chapter": {
+      "title": "Chapter 8: Request Methods, Headers, & Status Codes",
+      "explanation": "Hypertext Transfer Protocol (HTTP) is the foundational layer of web communication. It operates as a stateless client-server protocol. Browsers transmit HTTP Requests (incorporating methods like GET, POST, PUT, DELETE) containing structured headers. Web servers return HTTP Responses containing Status Codes (like 200 OK, 404 Not Found, 500 Server Error) accompanied by headers and response bodies.",
+      "diagram": " [Client Browser] ── GET /index.html HTTP/1.1 ──► [Web Server]\n                 ◄── HTTP/1.1 200 OK (HTML Payload) ──",
+      "definitions": {
+        "HTTP Header": "Key-value metadata sent before request/response bodies outlining connection details.",
+        "Stateless Protocol": "A system architecture where the server retains zero state information about clients across requests."
+      },
+      "examples": [
+        "POST Request: Submitting user credentials via a secure payload form.",
+        "Security Headers: Implementing 'X-Frame-Options: DENY' to protect against clickjacking attacks."
+      ],
+      "realWorldExample": "Developers sometimes pass sensitive information like API tokens in HTTP GET request URLs. Because URL pathways are printed in plain text in browser histories, proxy logs, and reverse proxy caches, attackers who compromise logging databases can harvest active user sessions.",
+      "notes": [
+        "Session identifiers are typically saved in HTTP Cookies to override the stateless nature of HTTP."
+      ],
+      "tips": [
+        "Know the HTTP status code families: 2xx (Success), 3xx (Redirection), 4xx (Client Error), 5xx (Server Error)."
+      ],
+      "summary": "HTTP handles web transactions via requests and responses. Secure HTTP headers block typical browser exploits."
+    },
+    "quiz": {
+      "question": "Which HTTP status code category represents server-side processing errors, such as database query timeouts or crash failures?",
+      "options": [
+        "2xx Codes",
+        "3xx Codes",
+        "4xx Codes",
+        "5xx Codes"
+      ],
+      "answer": 3,
+      "explanation": "The 5xx family indicates Server Errors (e.g., 500 Internal Server Error, 503 Service Unavailable). 4xx represents Client Errors (e.g., 404 Not Found)."
+    }
+  },
+  {
+    "id": "https-ssl",
+    "title": "HTTPS & SSL Foundations",
+    "chapter": {
+      "title": "Chapter 9: The TLS Handshake & Certificate Authorities",
+      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) encrypts HTTP web traffic using Transport Layer Security (TLS). To establish a connection, the client and server negotiate a TLS handshake, verifying the server's identity using a digital certificate signed by a trusted third-party Certificate Authority (CA). This establishes symmetric key encryption to prevent packet eavesdropping, injection, or modification.",
+      "diagram": "  Client                                                   Server\n    │                                                        │\n    ├────── ClientHello (Cipher list, random bytes) ────────►│\n    │                                                        │\n    │◄───── ServerHello + Certificate + DH Public Key ───────┤\n    │                                                        │\n    ├────── Client Key Exchange (Verify Certificate) ────────►│\n    │                                                        │\n    ├────── [Change Cipher Spec & Finished] ────────────────►│\n    │                                                        │\n    │◄───── [Change Cipher Spec & Finished] ─────────────────┤\n    │                                                        │\n    └─[ Encrypted Session Active - AES-GCM Encrypted ]",
+      "definitions": {
+        "TLS (Transport Layer Security)": "The cryptographic successor to SSL that encrypts internet transport layer connections.",
+        "Certificate Authority (CA)": "A trusted entity that issues cryptographic certificates verifying digital identity ownership."
+      },
+      "examples": [
+        "Eavesdropping Block: An attacker on open Wi-Fi can see the domain queried, but not the credentials or pages accessed.",
+        "Certificate Revocation List (CRL)": "A list of compromised certificates published by CAs that web browsers reject automatically."
+      ],
+      "realWorldExample": "In 2013, researchers revealed extensive Man-In-The-Middle (MITM) operations where legacy networks used custom certificates to intercept and decrypt HTTPS banking traffic on client computers without user knowledge.",
+      "notes": [
+        "HTTPS uses asymmetric encryption during the handshake to exchange keys, and symmetric encryption for subsequent session transfers."
+      ],
+      "tips": [
+        "Symmetric encryption is significantly faster than asymmetric encryption, which is why TLS only uses asymmetric operations to safely negotiate a symmetric session key."
+      ],
+      "summary": "HTTPS wraps HTTP inside TLS encryption, protecting communications against MITM interceptions and tampering."
+    },
+    "quiz": {
+      "question": "Why does the TLS protocol transition from asymmetric encryption to symmetric encryption after the initial handshake?",
+      "options": [
+        "Symmetric encryption provides significantly higher security thresholds.",
+        "Symmetric encryption is computationally faster and more efficient for bulk data.",
+        "Asymmetric keys cannot be transmitted over public router pathways.",
+        "Symmetric encryption does not require trusted Certificate Authorities."
+      ],
+      "answer": 1,
+      "explanation": "Asymmetric encryption requires heavy CPU cycles. TLS uses it to establish a shared key, then uses fast symmetric encryption (e.g. AES) to handle traffic."
+    }
+  },
+  {
+    "id": "linux-basics",
+    "title": "Linux Operating System Basics",
+    "chapter": {
+      "title": "Chapter 10: Filesystems, Users, & Kernel Space",
+      "explanation": "Linux is the backbone operating system of security operations, clouds, and embedded architectures. It divides system processes into Kernel Space (running core drivers and memory allocations) and User Space (handling normal applications and user scripts). Linux is strictly multi-user, using file permission attributes (Read, Write, Execute) and ownership designations to enforce administrative isolation and system integrity.",
+      "diagram": "     ┌────────────────────────────────────────────────────────┐\n     │  USER SPACE: Bash Shell, Web Server, User Processes    │\n     ├────────────────────────────────────────────────────────┤\n     │  SYSTEM CALL INTERFACE (sys_read, sys_write, etc.)     │\n     ├────────────────────────────────────────────────────────┤\n     │  KERNEL SPACE: CPU Scheduler, RAM Driver, Filesystem   │\n     └────────────────────────────────────────────────────────┘",
+      "definitions": {
+        "Kernel": "The core component of an OS that manages hardware resources and mediates applications access.",
+        "Root": "The omnipotent master administrator account in Linux, possessing absolute read-write system clearance."
+      },
+      "examples": [
+        "File Permissions: A file styled as '-rwxr-xr--' allows full rights to the owner, read/execute to group, and read-only to others.",
+        "sudo escalation: Running 'sudo apt update' to temporarily invoke administrative root rights for package installation."
+      ],
+      "realWorldExample": "Many enterprise security violations happen because developers leave file permissions on critical SSH keys or configuration files wide open (e.g., chmod 777). Any compromised local web app or low-privilege script can immediately read these credentials, escalating privileges to Root.",
+      "notes": [
+        "Linux treats literally everything as a file, including connected hardware drivers and active CPU processes (e.g. /dev/sda, /proc/cpuinfo)."
+      ],
+      "tips": [
+        "Understand file permission octal values: Read (4), Write (2), Execute (1). Thus, chmod 755 translates to rwxr-xr-x."
+      ],
+      "summary": "Linux uses strict user privileges and kernel isolation to manage files and system processes."
+    },
+    "quiz": {
+      "question": "What does a file permission profile of '644' in Linux indicate regarding user, group, and world-wide permissions?",
+      "options": [
+        "Owner has read/write, Group has read, World has read-only access",
+        "Owner has read/write/execute, Group has read, World has execute",
+        "Owner has execute, Group has write, World has read",
+        "Owner has read, Group has write, World has write"
+      ],
+      "answer": 0,
+      "explanation": "6 = Read+Write (4+2), 4 = Read-only (4). Thus, Owner gets read/write, group gets read, world gets read."
+    }
+  },
+  {
+    "id": "linux-commands",
+    "title": "Essential Linux Commands",
+    "chapter": {
+      "title": "Chapter 11: Core Commands & Pipe Redirection",
+      "explanation": "To analyze system logs and execute security scripts, an analyst must master the Linux Command Line Interface (CLI). Commands are executed in shell interpreters like Bash. Using pipes (e.g., '|') allows users to pass output from one command directly into another, enabling rapid searching, sorting, and pattern-matching of dense system logs.",
+      "diagram": "   $ cat auth.log | grep \"Failed password\" | wc -l\n     │              │                       │\n  1. Read File   2. Search failure patterns  3. Count total matching lines",
+      "definitions": {
+        "CLI (Command Line Interface)": "A text-based user interface used to interact with operating system files and commands.",
+        "Standard Output (stdout)": "The default channel where command line programs output their text results."
+      },
+      "examples": [
+        "grep: 'grep \"admin\" log.txt' searches for 'admin' occurrences inside a text file.",
+        "chmod: 'chmod 400 private.key' restricts a private file to read-only for its owner."
+      ],
+      "realWorldExample": "Security operations center (SOC) analysts use commands like 'tail -f /var/log/nginx/access.log | grep \"select\"' in real-time to watch incoming web requests for raw SQL injection query payloads.",
+      "notes": [
+        "Common tools for text streaming and sorting include: cat, grep, awk, sed, head, tail, sort, and uniq."
+      ],
+      "tips": [
+        "Always memorize the basic flags: 'ls -la' lists all files (including hidden ones) with detailed file permissions and sizes."
+      ],
+      "summary": "The CLI is essential for system administration and log analysis. Pipes connect simple utilities for powerful actions."
+    },
+    "quiz": {
+      "question": "Which Linux terminal command allows an analyst to dynamically monitor an active log file in real-time as lines are appended?",
+      "options": [
+        "cat -n /var/log/auth.log",
+        "tail -f /var/log/auth.log",
+        "grep -r /var/log/auth.log",
+        "head -n 10 /var/log/auth.log"
+      ],
+      "answer": 1,
+      "explanation": "The 'tail -f' command tells the console to follow the file, outputting new lines in real-time as they are written."
+    }
+  },
+  {
+    "id": "password-security",
+    "title": "Password Security Best Practices",
+    "chapter": {
+      "title": "Chapter 12: Password Entropy & Hashing Architectures",
+      "explanation": "Passwords are the primary gatekeepers of identity. Weak passwords can be easily guessed, brute-forced, or cracked using precomputed lookup lists. True password security relies on high 'entropy' (randomness and length), rather than simple substitutions. Furthermore, organizations must never store plain passwords; they must hash them using slow hashing algorithms appended with random salts.",
+      "diagram": " [Plaintext Pass] ──► [Hash Function + Salt] ──► [Unique Non-Reversible String]\n      \"hunter2\"         SHA-256 + \"$8s9d!f\"        \"$2y$12$D39fj...\"",
+      "definitions": {
+        "Entropy": "A measure of the unpredictability of a password, directly correlated with character length and diversity.",
+        "Salt": "A random string appended to passwords before hashing to make precomputed cracking lists (rainbow tables) useless."
+      },
+      "examples": [
+        "Weak Passwords: 'P@$$w0rd' has low entropy despite symbols because it follows highly predictable replacement structures.",
+        "Strong Hashing: Utilizing bcrypt, Argon2, or PBKDF2 to store credentials with configurable processing times."
+      ],
+      "realWorldExample": "In 2012, a major networking site suffered a breach where 6.5 million passwords were leaked in SHA-1 format without salts. Attackers cracked over 90% of the database in days using commercial graphics processors.",
+      "notes": [
+        "Increasing length contributes significantly more to password entropy than adding a single symbol or capital letter."
+      ],
+      "tips": [
+        "For defense, recommend the 'passphrase' method: combining four random, unrelated words (e.g. 'correcthorsebatterystaple') to achieve extreme length and high entropy while remaining easy to remember."
+      ],
+      "summary": "Strong passwords require high entropy. Safe authentication databases require salted, slow hashing functions."
+    },
+    "quiz": {
+      "question": "What is the primary cryptographic purpose of appending a random string (known as a 'Salt') to a password before running it through a hashing algorithm?",
+      "options": [
+        "To compress the password length for storage space optimization.",
+        "To make the hashing function execute faster during validation checks.",
+        "To protect against precomputed lookup attacks like Rainbow Tables.",
+        "To encrypt the password so it can be decrypted back to plaintext."
+      ],
+      "answer": 2,
+      "explanation": "Salting ensures identical passwords have totally unique hashes, preventing hackers from looking up hashes in precomputed tables."
+    }
+  },
+  {
+    "id": "mfa-basics",
+    "title": "Multi-Factor Authentication (MFA)",
+    "chapter": {
+      "title": "Chapter 13: Factors, TOTP Tokens, & Push Fatigue",
+      "explanation": "Multi-Factor Authentication (MFA) requires users to present multiple categories of proof to verify their identity. It categorizes factors into: Something You Know (passwords), Something You Have (hard tokens, apps), and Something You Are (biometrics). Deploying robust MFA prevents credential leaks from granting immediate account access.",
+      "diagram": "               [ SECURE LOGIN REQUEST ]\n                          │\n     ┌────────────────────┼────────────────────┐\n     ▼                    ▼                    ▼\n [Factor 1]           [Factor 2]           [Factor 3]\n Something You Know   Something You Have   Something You Are\n  (Password)          (Authenticator App)  (Fingerprint Scan)",
+      "definitions": {
+        "TOTP (Time-Based One-Time Password)": "A temporary passcode generated dynamically using a shared cryptographic key and the current time.",
+        "Push Fatigue Attack": "Flooding a victim's device with login approval push notifications until they click 'Approve' to stop the noise."
+      },
+      "examples": [
+        "Insecure MFA: SMS-based codes, which can be hijacked via SIM-swapping or telecom routing exploits.",
+        "Secure MFA: Hardware keys (e.g. FIDO2/YubiKey) that utilize public-key cryptography to prevent session hijacking."
+      ],
+      "realWorldExample": "A ride-sharing enterprise was breached when an attacker obtained an employee's password and spammed them with push requests for hours. The exhausted employee eventually accepted a push notice, giving the hacker entry.",
+      "notes": [
+        "MFA must be configured on all admin channels, remote desktops, and mail gateways to prevent compromise."
+      ],
+      "tips": [
+        "Authentication factors: Something you know (password), Something you have (token), Something you are (biometrics). Some models add: Somewhere you are, or Something you do."
+      ],
+      "summary": "MFA blocks unauthorized entry by requiring multiple distinct authentication factors."
+    },
+    "quiz": {
+      "question": "Which of the following authentication combinations demonstrates true multi-factor authentication (MFA) using two distinct factors?",
+      "options": [
+        "A static account password paired with your first pet's name.",
+        "A debit card PIN coupled with a secondary backup password.",
+        "An account password (something you know) and a TOTP token from an authenticator app (something you have).",
+        "A retinal eye scan paired with a fingerprint touch identifier."
+      ],
+      "answer": 2,
+      "explanation": "True MFA requires factors from different categories. Password (know) and App Token (have) are distinct. Retinal + Fingerprint are both biometrics (are)."
+    }
+  },
+  {
+    "id": "email-security",
+    "title": "Email Security Standards",
+    "chapter": {
+      "title": "Chapter 14: SPF, DKIM, & DMARC DNS Directives",
+      "explanation": "Email is inherently vulnerable to spoofing because legacy Simple Mail Transfer Protocol (SMTP) does not check sender identities. To secure email, organizations deploy three DNS standards: SPF (tells servers which IPs can send mail), DKIM (appends digital signatures to prove mail wasn't altered), and DMARC (tells receiving servers what to do with failed messages).",
+      "diagram": "  [Incoming Mail Server]\n         │\n         ├─► Query SPF DNS Record ────► [Compare Sender IP to Allowed List]\n         │\n         ├─► Query DKIM DNS Record ───► [Verify Public Key Signature on Mail]\n         │\n         └─► Apply DMARC Directives ──► [Pass / Quarantine / Reject Mail]",
+      "definitions": {
+        "SPF (Sender Policy Framework)": "A DNS TXT record declaring which IP addresses are authorized to send mail on behalf of a domain.",
+        "DKIM (DomainKeys Identified Mail)": "An email authentication standard adding public-key cryptography signatures to headers."
+      },
+      "examples": [
+        "SPF Rule: 'v=spf1 ip4:192.168.1.5 -all' permits ONLY mail coming from that specific IP.",
+        "DMARC Rule: 'p=reject' instructs receiving servers to completely drop emails that fail SPF or DKIM checks."
+      ],
+      "realWorldExample": "A logistics enterprise failed to define a DMARC policy. Hackers sent fake payroll invoices using the exact corporate domain (finance@company.com) to customers, intercepting hundreds of thousands of dollars in wire transfers.",
+      "notes": [
+        "Always review email headers (especially 'Authentication-Results') to check the SPF/DKIM validation status of critical invoices."
+      ],
+      "tips": [
+        "For exams, remember: SPF validates sender IP, DKIM signs mail cryptographically, and DMARC dictates enforcement policy (none, quarantine, reject)."
+      ],
+      "summary": "SPF, DKIM, and DMARC use DNS records to authenticate email senders and prevent spam and spoofing."
+    },
+    "quiz": {
+      "question": "Which DNS-based email security standard is explicitly responsible for signing outbound emails with a cryptographic private key to prove the email header was not tampered with in transit?",
+      "options": [
+        "SPF",
+        "DKIM",
+        "DMARC",
+        "SMTP"
+      ],
+      "answer": 1,
+      "explanation": "DKIM (DomainKeys Identified Mail) uses cryptographic public-key signatures in mail headers to prove integrity and source domain."
+    }
+  },
+  {
+    "id": "phishing-awareness",
+    "title": "Phishing Attack Awareness",
+    "chapter": {
+      "title": "Chapter 15: Phishing Vectors, Spear Phishing, & Smishing",
+      "explanation": "Phishing is a social engineering attack that tricks users into executing malicious files or entering credentials into forged logins. Attackers use urgency, authority, and fear to bypass logical checks. Phishing manifests as bulk emails, spear phishing (highly targeted attacks), vishing (voice/phone-based calls), or smishing (malicious SMS texts).",
+      "diagram": " [Attacker Clones Page] ──► [Sends Urgent Link] ──► [Victim Enters Credentials]\n (accounts.secure-login.net)   \"Action Required!\"       (Attacker logs credentials)",
+      "definitions": {
+        "Spear Phishing": "Highly customized phishing attacks targeting specific individuals or executives inside an enterprise.",
+        "Smishing": "Phishing attacks conducted via SMS text messages, often prompting immediate clicks on tracking links."
+      },
+      "examples": [
+        "Urgency Scams: An email claiming 'Your payroll account is suspended. Click here to verify within 1 hour.'",
+        "Whaling: Crafting highly detailed tax phishing campaigns targeting the Chief Financial Officer (CFO) specifically."
+      ],
+      "realWorldExample": "A high-profile media company was breached when a system administrator received a highly personalized spear-phishing email claiming to be from the internal database coordinator. They clicked a link, logged in, and handed the attacker complete credentials to internal servers.",
+      "notes": [
+        "Modern phishing sites can bypass MFA by using reverse proxies (like Evilginx) that capture active session cookies in real-time."
+      ],
+      "tips": [
+        "Always hover over links to inspect the actual destination domain. Look closely for lookalike letters (typosquatting) like 'arnazon.com' vs 'amazon.com'."
+      ],
+      "summary": "Phishing exploits human psychology. Spotting malicious links, attachments, and fake urgency is key to system defense."
+    },
+    "quiz": {
+      "question": "What is the key differentiator between generic bulk phishing campaigns and 'Spear Phishing' tactics?",
+      "options": [
+        "Spear phishing is conducted exclusively via telephone voice systems.",
+        "Spear phishing targets specific individuals with highly customized, researched information.",
+        "Spear phishing does not utilize hyperlinks or downloadable documents.",
+        "Spear phishing only targets government personnel or political institutions."
+      ],
+      "answer": 1,
+      "explanation": "Spear phishing uses targeted research about a specific victim (like names, department, or recent projects) to construct highly convincing, tailored campaigns."
+    }
+  },
+  {
+    "id": "social-engineering",
+    "title": "Social Engineering Vectors",
+    "chapter": {
+      "title": "Chapter 16: Tailgating, Pretexting, & Baiting",
+      "explanation": "Social engineering is the manipulation of human psychology to bypass hardware controls. Instead of cracking firewalls, attackers trick personnel into giving them access. Standard vectors include Pretexting (inventing convincing scenarios), Tailgating (physically following employees through badge gates), and Baiting (leaving infected USB drives in parking lots).",
+      "diagram": " [Physical Secure Door] ──◄ Employee Swipes Badge\n                             │\n                             └─ Attacker with coffee cups follows behind\n                                \"Oops, could you hold the door?\" (Tailgating)",
+      "definitions": {
+        "Baiting": "Leaving physical media (like USB drives) in public areas, relying on human curiosity to plug them into local networks.",
+        "Pretexting": "Creating an invented scenario (a pretext) to persuade a victim to leak sensitive info or perform actions."
+      },
+      "examples": [
+        "Tailgating: An attacker dressed as a generic maintenance worker carrying boxes, requesting an employee to hold the server room door.",
+        "Baiting: Leaving a USB drive labelled 'Q3 Salaries & Bonuses' in the staff elevator."
+      ],
+      "realWorldExample": "During a physical pen-test, an security auditor successfully bypassed secure server room locks simply by wearing a delivery service uniform, carrying a large box of donuts, and asking staff to hold the secure door.",
+      "notes": [
+        "Security cultures must encourage employees to politely challenge unbadged personnel, even in friendly office environments."
+      ],
+      "tips": [
+        "Always remember: Humans are often the weakest link in the security chain. Technology is useless if employees hold the door for an attacker."
+      ],
+      "summary": "Social engineers target psychological biases. Security awareness training must cover physical access and human biases."
+    },
+    "quiz": {
+      "question": "An attacker leaves several USB flash drives in a company parking lot labeled 'Private Payroll Data'. An employee finds one, plugs it in, and infects the network. What social engineering attack vector does this describe?",
+      "options": [
+        "Tailgating",
+        "Pretexting",
+        "Baiting",
+        "Phishing"
+      ],
+      "answer": 2,
+      "explanation": "Baiting relies on curiosity or greed, leaving infected media with enticing labels, waiting for a victim to connect it."
+    }
+  },
+  {
+    "id": "cyber-hygiene",
+    "title": "Cyber Hygiene Discipline",
+    "chapter": {
+      "title": "Chapter 17: Patching, Asset Inventories, & Device Security",
+      "explanation": "Cyber hygiene refers to the foundational security habits of individuals and enterprises. Just like personal hygiene protects health, regular system hygiene keeps networks secure. Important components include applying operating system updates (patching), cataloging asset inventories, disabling unused network services, and establishing regular backup systems.",
+      "diagram": "  [VULNERABLE OS] ───► Vulnerability Published ───► Exploit Tool Created\n         │                                               │\n         └──────────── Apply Security Patch ◄────────────┘\n                      (Protects System)",
+      "definitions": {
+        "Zero-Day Vulnerability": "A software flaw that is actively exploited before the developer publishes a security patch.",
+        "Asset Management": "Maintaining a dynamic inventory of every authorized hardware node and software application on a network."
+      },
+      "examples": [
+        "Patch Management: Automating server updates weekly to block CVE vulnerabilities.",
+        "Backup Strategy: Implementing the 3-2-1 backup rule (3 copies, on 2 different media types, with 1 copy offsite/cloud)."
+      ],
+      "realWorldExample": "In 2017, the Equifax credit agency suffered a massive breach of 147 million records due to a failure in basic cyber hygiene. A patch for the Apache Struts web framework was released, but Equifax failed to apply it, leaving public portals vulnerable for months.",
+      "notes": [
+        "Unused services, open legacy ports, and orphaned test systems expand an organization's attack surface unnecessarily."
+      ],
+      "tips": [
+        "Always treat automated operating system updates as critical. Unpatched systems are easy targets for script kiddies and automated scanning tools."
+      ],
+      "summary": "Effective security begins with strong cyber hygiene: prompt patching, structured backups, and active asset tracking."
+    },
+    "quiz": {
+      "question": "What is the industry-standard '3-2-1 backup rule' for protecting organizational data against severe hardware failures or ransomware encryption?",
+      "options": [
+        "3 dynamic backups, on 2 distinct media types, with 1 copy kept completely offsite or in isolated cloud lockers.",
+        "3 separate versions of data, updated 2 times per day, using 1 core system server.",
+        "3 network administrators, with 2 local keys, managing 1 master database restore point.",
+        "3 cloud mirrors, using 2 different providers, running on 1 continuous network loop."
+      ],
+      "answer": 0,
+      "explanation": "The 3-2-1 backup rule states you must keep at least 3 copies of data, on 2 different media formats, with at least 1 copy kept offsite/cloud."
+    }
+  },
+  {
+    "id": "safe-browsing",
+    "title": "Safe Browsing Tactics",
+    "chapter": {
+      "title": "Chapter 18: Browser sandboxing, Cookies, & Malvertising",
+      "explanation": "Web browsers execute untrusted web scripts in isolated environments called sandboxes. Attackers use 'malvertising' (injecting exploits into legitimate ad networks) or malicious browser extensions to escape sandboxes and access client data. Safe browsing requires active content filtering, auditing active extensions, and avoiding sketchy downloads.",
+      "diagram": " [Untrusted Website] ────► [Browser Sandbox Isolation] ──X──► [Local Filesystem]\n                              (Executes isolated JS)         (Blocked by sandbox)",
+      "definitions": {
+        "Drive-By Download": "A silent attack where visiting an infected page triggers malware downloads without the user clicking anything.",
+        "Malvertising": "The use of legitimate online advertising networks to propagate malicious redirect scripts."
+      },
+      "examples": [
+        "Ad Blocking: Utilizing trusted content filters to block malicious ad script execution.",
+        "Extension Audit: Removing legacy PDF browser plugins that possess unpatched buffer vulnerabilities."
+      ],
+      "realWorldExample": "Attackers bought advertising space on a major news site. They injected malicious JavaScript into the display ads that triggered drive-by exploits, targeting out-of-date browser engines to install ransomware on readers' PCs.",
+      "notes": [
+        "Clear cookies, cache, and history regularly, and use private modes when browsing on public systems to prevent session theft."
+      ],
+      "tips": [
+        "Never approve notification or execution requests from unverified media streaming sites; these are typical delivery systems for trojan extensions."
+      ],
+      "summary": "Modern browsers isolate websites. Improve security by utilizing ad filters, updating browsers, and restricting extensions."
+    },
+    "quiz": {
+      "question": "Which term describes a silent cybersecurity attack where simply visiting a compromised website triggers a malicious script to download and execute in the background without user consent?",
+      "options": [
+        "Drive-by Download",
+        "Phishing Redirect",
+        "Cross-Site Scripting",
+        "Session Hijacking"
+      ],
+      "answer": 0,
+      "explanation": "Drive-by downloads exploit browser or plugin vulnerabilities to silently install malware as soon as the victim loads the webpage."
+    }
+  }
+]

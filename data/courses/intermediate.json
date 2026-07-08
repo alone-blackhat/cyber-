@@ -1,0 +1,648 @@
+[
+  {
+    "id": "ethical-hacking",
+    "title": "Ethical Hacking Philosophy",
+    "chapter": {
+      "title": "Chapter 1: The Boundaries of Authorized Pentesting",
+      "explanation": "Ethical hacking (also known as penetration testing) is the authorized simulation of cyber attacks against networks and applications to identify vulnerabilities before black-hat hackers can exploit them. The critical separator of ethical hacking is Authorization. Before running any scan, security practitioners must secure explicit, signed legal contracts outlining the Scope of Work (SOW), Rules of Engagement (ROE), and liability exemptions.",
+      "diagram": "  ┌────────────────────────────────────────────────────────┐\n  │                    HACKER ROLES                        │\n  └──────┬────────────────────┬─────────────────────┬──────┘\n         │                    │                     │\n ┌───────▼───────┐    ┌───────▼───────┐     ┌───────▼───────┐\n │   WHITE HAT   │    │   GRAY HAT    │     │   BLACK HAT   │\n │  Authorized   │    │ Unauthorised  │     │ Malicious /   │\n │ Defensive Sec │    │ But No Malice │     │ Criminal Gain │\n └───────────────┘    └───────────────┘     └───────────────┘",
+      "definitions": {
+        "Scope of Work (SOW)": "A formal legal document defining the exact host targets, networks, and applications authorized for penetration testing.",
+        "Rules of Engagement (ROE)": "Operational guidelines specifying test timing, restricted testing hours, IP sources, and notification channels in case of service disruption."
+      },
+      "examples": [
+        "White Hat: Reporting a SQL injection vulnerability to a client under a bug bounty program.",
+        "Black Hat: Exfiltrating a customer database to extort the company for cryptocurrency."
+      ],
+      "realWorldExample": "In 2019, two white-hat pentester consultants were arrested in Iowa after executing a physical security test of a courthouse. Even though their parent client authorized physical bypasses, the local county judge was not briefed, illustrating the critical importance of clarifying jurisdictional scopes beforehand.",
+      "notes": [
+        "Never run scans on targets you do not legally own or have explicit written, signed authorization to test. Verbal consent is not legally binding."
+      ],
+      "tips": [
+        "For certification exams, remember that White Hats have permission, Black Hats have zero permission, and Gray Hats operate without permission but usually do not possess criminal intent."
+      ],
+      "summary": "Ethical hacking requires authorization. Always define scopes, rules of engagement, and legal boundaries before performing security evaluations."
+    },
+    "quiz": {
+      "question": "Which legal document outlines the specific timeline, testing constraints, and administrative notification procedures during a penetration testing engagement?",
+      "options": [
+        "Non-Disclosure Agreement (NDA)",
+        "Rules of Engagement (ROE)",
+        "Service Level Agreement (SLA)",
+        "End-User License Agreement (EULA)"
+      ],
+      "answer": 1,
+      "explanation": "The Rules of Engagement (ROE) specifies operational boundaries, timelines, allowed tools, and escalation procedures during a security assessment."
+    }
+  },
+  {
+    "id": "cyber-kill-chain",
+    "title": "The Cyber Kill Chain Framework",
+    "chapter": {
+      "title": "Chapter 2: Decoupling Attacks via Phase Analysis",
+      "explanation": "The Cyber Kill Chain, designed by Lockheed Martin, is an industry-standard framework describing the structure of targeted cyber attacks. By decomposing an attack into 7 linear stages (Reconnaissance, Weaponization, Delivery, Exploitation, Installation, Command & Control, Actions on Objectives), defenders can build barriers to interrupt the chain at any phase.",
+      "diagram": "┌───────────────────────────────────────────────────────────────┐\n│                     THE CYBER KILL CHAIN                      │\n└─┬─────┬──────┬──────┬──────┬──────┬───────────────────────────┘\n  │     │      │      │      │      │\n  │1. RECON: Gathering digital assets, IP ranges, mail accounts.\n  │2. WEAPONIZATION: Merging remote access exploits into files (e.g. PDF).\n  │3. DELIVERY: Distributing payload via email, web links, or USB.\n  │4. EXPLOITATION: Activating the payload to abuse software vulnerabilities.\n  │5. INSTALLATION: Writing persistent backdoors into target system registries.\n  │6. C2 CHANNEL: Establishing secure remote command links (e.g. DNS beacons).\n  │7. ACTION: Exfiltrating private records, encrypting assets, or defacing.\n  ▼",
+      "definitions": {
+        "Weaponization": "The process where an attacker couples a remote exploit with a carrier payload to create a deployable package.",
+        "Command & Control (C2)": "An external infrastructure (servers, DNS records) used by attackers to send remote control instructions to infected hosts."
+      },
+      "examples": [
+        "Interruption at Recon: Implementing rate limiting on company website directory scans.",
+        "Interruption at Delivery: Deploying advanced email sandboxes that quarantine incoming PDF attachments containing active macros."
+      ],
+      "realWorldExample": "During the massive Target breach of 2013, attackers gained access via a third-party HVAC vendor (Delivery). They executed lateral movement (Exploitation/Installation) and established C2 channels to push malware to points-of-sale, stealing credit cards (Actions on Objectives).",
+      "notes": [
+        "Defenders win if they disrupt the chain at *any* stage. Interrupting earlier stages is significantly cheaper and more effective than late-stage response."
+      ],
+      "tips": [
+        "Remember the sequence: Recon -> Weaponize -> Deliver -> Exploit -> Install -> C2 -> Actions on Objectives."
+      ],
+      "summary": "The Cyber Kill Chain structures attack phases. Breaking the chain at any step stops the attack completely."
+    },
+    "quiz": {
+      "question": "At which phase of the Cyber Kill Chain does an attacker package a software exploit inside a seemingly harmless document (like an invoice PDF) to distribute it?",
+      "options": [
+        "Reconnaissance",
+        "Weaponization",
+        "Exploitation",
+        "Command & Control"
+      ],
+      "answer": 1,
+      "explanation": "Weaponization is the phase where the exploit is bundled with a payload or document, preparing the weapon for delivery."
+    }
+  },
+  {
+    "id": "recon-strategy",
+    "title": "Reconnaissance Strategy",
+    "chapter": {
+      "title": "Chapter 3: Passive and Active Information Gathering",
+      "explanation": "Reconnaissance is the initial phase of any attack or pentest. It involves discovering targets, harvesting subdomains, mapping public IPs, and locating public employees. Reconnaissance is divided into Passive Recon (collecting information without sending a single packet to the target system directly, using OSINT sources) and Active Recon (directly querying target ports and services).",
+      "diagram": "               [ RECONNAISSANCE PROCESS ]\n                           │\n           ┌───────────────┴───────────────┐\n           ▼                               ▼\n     [ PASSIVE RECON ]               [ ACTIVE RECON ]\n    - Shodan Searches               - Nmap Port Scan\n    - DNS Records (WHOIS)           - Directory Brute-Force\n    - LinkedIn Staff Scraping       - Banner Grabbing",
+      "definitions": {
+        "Passive Reconnaissance": "Gathering public intelligence about a target using third-party databases, search engines, and social channels without directly interacting with system nodes.",
+        "Active Reconnaissance": "Interacting with target hosts directly to discover open ports, active services, and operating system variants, creating logs on the target system."
+      },
+      "examples": [
+        "Passive Recon: Searching Shodan for vulnerable IoT cameras connected in a target's zip code.",
+        "Active Recon: Scanning a target server's open ports with 'nmap -sV target.com'."
+      ],
+      "realWorldExample": "In 2020, hackers breached a municipal water treatment facility after using passive recon on LinkedIn to discover system engineering names, which they correlated with leaked credential databases to gain admin access.",
+      "notes": [
+        "Active recon can trigger Intrusion Detection System (IDS) alerts. Pentesters must adjust scan speeds and techniques to simulate realistic adversaries."
+      ],
+      "tips": [
+        "WHOIS records, Shodan queries, and social network searches are always classified as Passive Reconnaissance."
+      ],
+      "summary": "Reconnaissance gathers system data. Passive recon uses OSINT to avoid detection; active recon probes targets directly."
+    },
+    "quiz": {
+      "question": "Which of the following actions is classified as PASSIVE reconnaissance because it gathers target details without sending any network frames directly to the target's servers?",
+      "options": [
+        "Running an active Nmap TCP connect port scan.",
+        "Probing open web folders with a directory brute-forcer like Gobuster.",
+        "Querying public WHOIS registries and LinkedIn profiles of company executives.",
+        "Running banner grabbing commands against a mail server."
+      ],
+      "answer": 2,
+      "explanation": "Querying public WHOIS databases and harvesting employee profiles on LinkedIn does not interact with the victim's infrastructure, making it Passive Recon."
+    }
+  },
+  {
+    "id": "digital-footprinting",
+    "title": "Digital Footprinting",
+    "chapter": {
+      "title": "Chapter 4: OSINT and Subdomain Enumeration",
+      "explanation": "Digital footprinting is the creation of a comprehensive map of a target's online presence. Analysts harvest open subdomains, locate orphaned staging servers, identify cloud storage buckets, and map the company's IP blocks. This exposes the outer perimeter and identifies weak entry points that may be unmonitored by security teams.",
+      "diagram": "  [Main Domain] (company.com)\n       │\n       ├─► [Subdomain Harvest] ──► dev.company.com (Staging/Unpatched!)\n       ├─► [IP Block Mapping]  ──► 192.168.10.0/24\n       └─► [Cloud Buckets]     ──► company-backup.s3.amazonaws.com",
+      "definitions": {
+        "Subdomain Enumeration": "The process of identifying all subdomains associated with a main domain, often revealing hidden portal access paths.",
+        "OSINT (Open Source Intelligence)": "Data gathered from publicly available records, databases, websites, and satellite imagery."
+      },
+      "examples": [
+        "Subdomain Discovery: Using tools like Subfinder or Amass to find 'test-api.target.com'.",
+        "Google Dorking: Using advanced search queries like 'site:target.com filetype:env' to locate sensitive backend configuration files."
+      ],
+      "realWorldExample": "An investment firm's security team forgot to secure an S3 bucket named 'firm-confidential-backups'. An OSINT researcher found the public bucket in hours using simple bucket-discovery tools, exposing client agreements.",
+      "notes": [
+        "Regular footprint audits help security teams locate shadow IT systems that were stood up by teams without security reviews."
+      ],
+      "tips": [
+        "Use 'Google Dorks' like 'intitle:\"index of\" \"backup.zip\"' to locate exposed file directories on unconfigured web servers."
+      ],
+      "summary": "Digital Footprinting maps out target networks. Standardizing asset tracking prevents unmonitored staging portals."
+    },
+    "quiz": {
+      "question": "What is the primary benefit of performing subdomain enumeration during a digital footprint audit?",
+      "options": [
+        "It encrypts system database connections automatically.",
+        "It reveals unmonitored subdomains, staging servers, and internal developer portals.",
+        "It increases the bandwidth of the main web hosting channel.",
+        "It prevents external attackers from sending emails to internal staff."
+      ],
+      "answer": 1,
+      "explanation": "Subdomain enumeration helps discover forgotten or unmonitored staging portals (such as dev.company.com) that may contain unpatched vulnerabilities."
+    }
+  },
+  {
+    "id": "port-scanning",
+    "title": "Network & Port Scanning",
+    "chapter": {
+      "title": "Chapter 5: Nmap Engines, TCP Flags, & State Maps",
+      "explanation": "Port scanning is the active mapping of a remote target's network interface to determine which ports are listening (open), closed, or filtered by firewalls. Nmap (Network Mapper) is the industry standard tool. Scans manipulate TCP packet headers (specifically flags like SYN, ACK, FIN, RST, PUSH, URG) to deduce how the host operating system responds, exposing open pathways.",
+      "diagram": " [Attacker] ───────── SYN Packet (Port 80) ────────► [Target Host]\n [Attacker] ◄──────── SYN-ACK (Port Open!) ───────── [Target Host]\n [Attacker] ───────── RST (Close Connection) ──────► [Target Host]\n\n [Attacker] ───────── SYN Packet (Port 22) ────────► [Target Host]\n [Attacker] ◄──────── RST-ACK (Port Closed!) ─────── [Target Host]",
+      "definitions": {
+        "Filtered Port": "A port state where Nmap cannot determine if the port is open or closed because a firewall is blocking responses.",
+        "SYN Scan (-sS)": "A fast, stealthy port scanning technique that sends SYN packets but cuts connections with a RST before a handshake completes."
+      },
+      "examples": [
+        "Nmap SYN Scan: 'nmap -sS -p 1-1000 10.0.0.15' scans the first 1000 ports.",
+        "Nmap Service/OS Scan: 'nmap -A 10.0.0.15' probes ports for software names, versions, and host OS."
+      ],
+      "realWorldExample": "An audit found an old legacy printer port (TCP Port 9100) open to the internet. Security scanners identified the open port, extracted unpatched firmware details, and warned that attackers could hijack the network.",
+      "notes": [
+        "Port scanning can consume bandwidth and generate noticeable security logs. Be careful when scanning production databases."
+      ],
+      "tips": [
+        "Nmap's stealthy SYN scan (-sS) is also called a 'Half-Open Scan' because it never establishes a full TCP connection."
+      ],
+      "summary": "Port scanning finds open pathways. Analysts use Nmap to identify active systems, open ports, and system configurations."
+    },
+    "quiz": {
+      "question": "Why is the Nmap SYN scan (-sS) frequently referred to as a 'half-open' or stealthy network scan?",
+      "options": [
+        "It only scans half of the total available ports on a target system.",
+        "It encrypts the source IP address to completely hide the scanner's location.",
+        "It sends SYN packets but terminates the handshake with a RST before the TCP connection can be fully established.",
+        "It operates strictly inside virtual sandbox environments."
+      ],
+      "answer": 2,
+      "explanation": "A SYN scan terminates connections with an RST flag right after receiving a SYN-ACK, never completing the connection, which avoids generating connection logs."
+    }
+  },
+  {
+    "id": "system-enumeration",
+    "title": "System Enumeration",
+    "chapter": {
+      "title": "Chapter 6: SMB, LDAP, & User Audits",
+      "explanation": "System enumeration is the process of extracting specific, actionable data from active targets. Unlike scanning (which simply finds open ports), enumeration queries services (like SMB, LDAP, SNMP, DNS) to gather exact usernames, system group lists, file share directories, hostnames, and vulnerable software versions. This data is used to plan specific exploit payloads.",
+      "diagram": "  [Tester Terminal] ───► SMB Protocol Query ───► [Remote File Server]\n  [Tester Terminal] ◄─── List: Shares, Users ─── [Remote File Server]\n                          - /anonymous-share (Read Access!)\n                          - /operator-alice",
+      "definitions": {
+        "SMB (Server Message Block)": "A network file-sharing protocol used in Windows environments, operating on TCP Port 445.",
+        "Enumeration": "The process of extracting human-understandable lists (users, shares, apps) from active network services."
+      },
+      "examples": [
+        "SMB Enumeration: Using 'smbclient -L //10.0.2.12' to list open folders without password clearance.",
+        "SNMP Enumeration: Querying network routing tables using default public community strings."
+      ],
+      "realWorldExample": "The notorious EternalBlue exploit utilized vulnerability flaws in Microsoft's SMBv1 implementation (Port 445), letting attackers execute code with system privileges and launch the WannaCry ransomware pandemic.",
+      "notes": [
+        "Disable unencrypted protocols like SMBv1, and disable null sessions on Windows shares to block enumeration scans."
+      ],
+      "tips": [
+        "Always check Port 445 (SMB) and Port 139 (NetBIOS) during enumeration audits; unconfigured file shares are common security holes."
+      ],
+      "summary": "Enumeration extracts detailed system details. Securing directories and disabling legacy protocols stops scanning tools."
+    },
+    "quiz": {
+      "question": "Which Windows network file sharing protocol operates on TCP Port 445 and is a frequent target for system enumeration and exploit attacks?",
+      "options": [
+        "Simple Mail Transfer Protocol (SMTP)",
+        "Server Message Block (SMB)",
+        "Network Time Protocol (NTP)",
+        "File Transfer Protocol (FTP)"
+      ],
+      "answer": 1,
+      "explanation": "SMB (Server Message Block) runs on Port 445 and is used to share files, printers, and system ports on Windows networks."
+    }
+  },
+  {
+    "id": "web-security",
+    "title": "Modern Web Security Architecture",
+    "chapter": {
+      "title": "Chapter 7: Single Page Applications & API Gateways",
+      "explanation": "Modern web systems are built using decoupled architectures. The client frontend (Single Page Applications built in React, Vue, or Angular) runs inside the browser, while data transactions are handled by backend servers via API Gateways (using REST, GraphQL, or gRPC). Web security requires securing both public static interfaces and private API endpoints against injection, parameter modification, and access-control bypasses.",
+      "diagram": "  [Browser UI] ─── API Request (JSON + Bearer Token) ───► [API Gateway]\n                                                            │\n  [Database] ◄──────── DB queries (SQL) ────────────────────┘",
+      "definitions": {
+        "API Gateway": "A routing tier that accepts client API calls, handles traffic, validates tokens, and forwards requests to backend services.",
+        "CORS (Cross-Origin Resource Sharing)": "A browser security mechanism that restricts web applications from requesting assets from a different origin."
+      },
+      "examples": [
+        "CORS Configuration: 'Access-Control-Allow-Origin: https://cybershield.org' restricts resource access to a trusted domain.",
+        "API Security: Forcing authorization checks on every GET/POST request endpoint."
+      ],
+      "realWorldExample": "An online retail site exposed their internal inventory API gateway without authentication, assuming that because it wasn't visible in the user interface, hackers wouldn't find it. Attackers intercepted the browser network requests, located the API, and queried bulk user records directly.",
+      "notes": [
+        "Never trust client-side data. Front-end validations are helpful for user experience, but all parameters must be validated server-side."
+      ],
+      "tips": [
+        "Remember that CORS is a browser-enforced security check, not a server-side firewall. It will not block terminal-based curl requests."
+      ],
+      "summary": "Modern web architectures separate display from data. Secure API portals are vital for protecting backend data."
+    },
+    "quiz": {
+      "question": "True or False: Configuring strict CORS (Cross-Origin Resource Sharing) policies on your web server prevents attackers from using command-line tools like curl or Postman to query your API endpoints directly.",
+      "options": [
+        "True - CORS blocks all external requests at the server network interface.",
+        "False - CORS is a browser-enforced security policy and does not restrict non-browser HTTP clients like curl."
+      ],
+      "answer": 1,
+      "explanation": "CORS is enforced strictly by web browsers. Command line clients like curl or backend scripts ignore CORS rules and can query endpoints directly."
+    }
+  },
+  {
+    "id": "auth-protocols",
+    "title": "Authentication Protocols",
+    "chapter": {
+      "title": "Chapter 8: OAuth2, SAML, & OIDC Security Standards",
+      "explanation": "Authentication verifies *who* a user is. Modern systems use federated identity protocols to avoid storing passwords locally. Key industry standards include OAuth 2.0 (designed for authorization delegation), OpenID Connect (OIDC, built on top of OAuth 2.0 to handle authentication), and SAML (Security Assertion Markup Language, an XML-based federated system used in enterprise environments).",
+      "diagram": " [Client Browser] ─────── Auth Request (Redirects to IDP) ──────► [Okta/Google IDP]\n [Client Browser] ◄────── Grants ID Token (OIDC Token) ───────── [Okta/Google IDP]\n [Application API] ◄───── Submits Access Token to login ───────── [Client Browser]",
+      "definitions": {
+        "OAuth 2.0": "An authorization framework that enables external applications to obtain limited access to user accounts.",
+        "OIDC (OpenID Connect)": "An identity layer built on top of the OAuth 2.0 framework that handles secure client authentication."
+      },
+      "examples": [
+        "Single Sign-On (SSO): Logging into a learning portal using your company Google Workspace identity.",
+        "SAML Assertions: Digital XML tickets passed between Identity Providers (IdP) and Service Providers (SP) to grant user entry."
+      ],
+      "realWorldExample": "In 2018, attackers compromised a social media site's authorization database, stealing millions of OAuth access tokens. These tokens let them log into third-party sites using single sign-on buttons without needing user passwords.",
+      "notes": [
+        "OAuth access tokens must be treated with the same level of security as passwords; compromising a token grants immediate access to the user's account scopes."
+      ],
+      "tips": [
+        "OAuth handles *Authorization* (delegating access scopes), while OIDC handles *Authentication* (verifying identity)."
+      ],
+      "summary": "Federated authentication simplifies logins. Ensure OAuth access tokens and SAML assertions are securely validated."
+    },
+    "quiz": {
+      "question": "Which of the following frameworks is designed specifically as an Identity Layer on top of OAuth 2.0 to handle user Authentication?",
+      "options": [
+        "SAML 2.0",
+        "OpenID Connect (OIDC)",
+        "RADIUS",
+        "Kerberos"
+      ],
+      "answer": 1,
+      "explanation": "OpenID Connect (OIDC) is an identity layer built on OAuth 2.0 to provide user authentication and profile details."
+    }
+  },
+  {
+    "id": "auth-mechanisms",
+    "title": "Authorization Mechanisms",
+    "chapter": {
+      "title": "Chapter 9: RBAC vs ABAC Rulesets",
+      "explanation": "Authorization determines *what* an authenticated user is permitted to do. Modern systems manage permissions using either Role-Based Access Control (RBAC, where access is granted based on user roles, like Admin or Auditor) or Attribute-Based Access Control (ABAC, which evaluates dynamic attributes like user location, device state, current IP, or time).",
+      "diagram": " [User: Alice] ──► [Role: Auditor] ──► [RBAC Policy: Allowed to Read Logs]\n\n [User: Bob] ──► [Location: Home] + [Time: 3 AM] ──► [ABAC Policy: Denied Access]",
+      "definitions": {
+        "RBAC (Role-Based Access Control)": "An access control mechanism that determines permissions based on defined organizational roles.",
+        "ABAC (Attribute-Based Access Control)": "An authorization model that evaluates attributes (user, environmental, resource) using logical policies."
+      },
+      "examples": [
+        "RBAC: Restricting access to server console settings to users assigned the 'SysAdmin' role.",
+        "ABAC: Allowing engineers to update production files only if they connect from an internal IP address during business hours."
+      ],
+      "realWorldExample": "A medical records provider used RBAC to restrict access to records to employees with the 'Nurse' role. However, an attacker compromised a Nurse's account and downloaded thousands of records from a home IP address, highlighting the need for ABAC rules to block off-hours, external connections.",
+      "notes": [
+        "Always implement the Principle of Least Privilege: users should only have the minimum permissions needed to perform their roles."
+      ],
+      "tips": [
+        "RBAC is easy to set up and manage, but ABAC provides significantly greater flexibility for complex security requirements."
+      ],
+      "summary": "Authorization enforces access boundaries. RBAC uses roles; ABAC evaluates dynamic attributes for granular security."
+    },
+    "quiz": {
+      "question": "An access policy states: 'Only users in the HR department can view employee salary files, and only during normal business hours (9 AM - 5 PM) when connecting from an internal office subnet.' What authorization model is this?",
+      "options": [
+        "Discretionary Access Control (DAC)",
+        "Role-Based Access Control (RBAC)",
+        "Attribute-Based Access Control (ABAC)",
+        "Mandatory Access Control (MAC)"
+      ],
+      "answer": 2,
+      "explanation": "This policy evaluates multiple dynamic attributes (department, time of day, network subnet), making it an example of ABAC."
+    }
+  },
+  {
+    "id": "cookie-mechanics",
+    "title": "Cookie Mechanics",
+    "chapter": {
+      "title": "Chapter 10: Secure, HttpOnly, & SameSite Flags",
+      "explanation": "HTTP cookies are small text strings saved by browsers to maintain state across web sessions. Because cookies often store session tokens, they are a primary target for hijacking. To protect cookies, developers must configure security flags: Secure (forces HTTPS transmission), HttpOnly (blocks access from client-side scripts), and SameSite (prevents cookies from being sent in cross-site requests).",
+      "diagram": "  Set-Cookie: session_id=xyz123; Secure; HttpOnly; SameSite=Strict\n                  │             │        │              │\n            Session Token     HTTPS    Blocks JS     Blocks Cross-Site\n                              Only     Access (XSS)  Requests (CSRF)",
+      "definitions": {
+        "HttpOnly Flag": "A cookie directive that prevents browser-side JavaScript from accessing cookie values, mitigating token-theft via XSS.",
+        "SameSite Flag": "A cookie parameter (Strict, Lax, or None) that controls if cookies are sent in requests originating from external websites."
+      },
+      "examples": [
+        "HttpOnly Defense: If an attacker executes XSS, 'document.cookie' returns empty, protecting the session token.",
+        "SameSite Lax: Ensures session cookies are sent during normal navigation but blocked in background cross-site requests."
+      ],
+      "realWorldExample": "A banking portal failed to configure the 'HttpOnly' flag on their session cookies. An attacker found a cross-site scripting vulnerability on a forum page, executed a script, and retrieved 'document.cookie', stealing hundreds of user sessions.",
+      "notes": [
+        "Always configure 'Secure' and 'HttpOnly' flags by default on any cookie storing authentication or session data."
+      ],
+      "tips": [
+        "For certification exams, remember: HttpOnly protects against XSS token theft, while SameSite protects against CSRF attacks."
+      ],
+      "summary": "Cookies store session tokens. Configure Secure, HttpOnly, and SameSite flags to block session hijacking and CSRF."
+    },
+    "quiz": {
+      "question": "Which cookie flag must be enabled to prevent client-side JavaScript (such as an injected XSS script) from reading cookie values via document.cookie?",
+      "options": [
+        "Secure",
+        "HttpOnly",
+        "SameSite=Strict",
+        "Path=/"
+      ],
+      "answer": 1,
+      "explanation": "The HttpOnly flag blocks JavaScript from reading the cookie, protecting session tokens from being stolen by cross-site scripting (XSS) scripts."
+    }
+  },
+  {
+    "id": "session-management",
+    "title": "Session Management",
+    "chapter": {
+      "title": "Chapter 11: JWT Tokens vs Stateful Sessions",
+      "explanation": "Session management coordinates client authorization across multiple requests. Stateful Sessions store session data in server-side databases, checking a session ID cookie sent by the client. Stateless Sessions use JSON Web Tokens (JWTs), which are cryptographically signed JSON payloads stored on the client, eliminating the need for server-side database lookups.",
+      "diagram": "  [JWT Structure]\n  eyJhbGciOiJIUzI1Ni... . eyJ1c2VyIjoib3BlcmF0... . f_8M7k3J... \n  [ HEADER (Algorithm) ]   [ PAYLOAD (Claims/User) ]   [ SIGNATURE (Verify) ]",
+      "definitions": {
+        "JWT (JSON Web Token)": "A compact, URL-safe container format used to securely transmit cryptographically signed data between systems.",
+        "Session Hijacking": "An attack where an adversary steals a victim's active session token to masquerade as that user."
+      },
+      "examples": [
+        "JWT Signature Validation: The backend server verifies the incoming JWT signature using its private key before processing the API request.",
+        "Session Timeout: Automating the invalidation of session records in Redis after 15 minutes of inactivity."
+      ],
+      "realWorldExample": "An application used JWTs without validating signatures on the backend. Attackers decoded the token, changed the username field to 'admin', re-encoded it, and submitted it, gaining full admin access because the backend simply trusted the claims.",
+      "notes": [
+        "JWT payloads are only signed, not encrypted (unless using JWE). Anyone can decode a JWT, so never store sensitive data like passwords in the payload."
+      ],
+      "tips": [
+        "Ensure JWT validation code explicitly rejects 'alg: none' to prevent attackers from stripping the signature."
+      ],
+      "summary": "Sessions keep users logged in. Stateful sessions use server-side tracking, while JWTs use signed client-side payloads."
+    },
+    "quiz": {
+      "question": "Which of the three components of a JSON Web Token (JWT) is responsible for ensuring the token claims have not been altered in transit?",
+      "options": [
+        "The Header",
+        "The Payload",
+        "The Signature",
+        "The Metadata"
+      ],
+      "answer": 2,
+      "explanation": "The Signature is created by hashing the header and payload with a secret key. If any part of the header or payload changes, the signature becomes invalid."
+    }
+  },
+  {
+    "id": "sqli-awareness",
+    "title": "SQL Injection (SQLi) Awareness",
+    "chapter": {
+      "title": "Chapter 12: Escape Vectors & Prepared Statements",
+      "explanation": "SQL Injection (SQLi) occurs when untrusted user input is concatenated directly into SQL queries on the backend database. This lets attackers escape the intended string context and execute arbitrary SQL commands, letting them read databases, modify records, or execute admin commands.",
+      "diagram": "  Concatenated Query: \"SELECT * FROM users WHERE user = '\" + input + \"'\"\n  Malicious Input:   ' OR '1'='1\n  Resulting SQL:     SELECT * FROM users WHERE user = '' OR '1'='1'\n                     └───────────── Always True! Returns all users ───────┘",
+      "definitions": {
+        "SQL Injection": "A vulnerability where an attacker manipulates database queries by injecting SQL syntax elements into input fields.",
+        "Prepared Statement": "A secure coding technique where SQL queries are pre-compiled on the database server, passing inputs as parameters rather than executable SQL code."
+      },
+      "examples": [
+        "Concatenated Query (Vulnerable): 'db.query(\"SELECT * FROM inventory WHERE name = '\" + req.body.name + \"'\")'",
+        "Prepared Query (Secure): 'db.query(\"SELECT * FROM inventory WHERE name = ?\", [req.body.name])'"
+      ],
+      "realWorldExample": "In 2015, a UK telecommunications company was breached via a simple SQL injection vulnerability in a public web form. Attackers extracted the personal details of 150,000 customers, costing the company millions in fines and brand damage.",
+      "notes": [
+        "Prepared statements (parameterization) are the primary defense against SQL injection. Escaping strings is a secondary, less secure option."
+      ],
+      "tips": [
+        "Never concatenate string inputs in database queries, regardless of how safe or clean you believe the inputs are."
+      ],
+      "summary": "SQL Injection compromises databases. Block SQLi by using prepared statements and parameterized queries on all inputs."
+    },
+    "quiz": {
+      "question": "Which software development practice completely prevents SQL Injection vulnerabilities by sending query logic and user input separately to the database?",
+      "options": [
+        "Input sanitization using regex filters",
+        "Prepared Statements (Parameterized Queries)",
+        "Encrypting database connections with TLS",
+        "Disabling database administrative permissions"
+      ],
+      "answer": 1,
+      "explanation": "Prepared Statements pre-compile the SQL structure on the server. User input is treated strictly as a parameter value, never as executable SQL code."
+    }
+  },
+  {
+    "id": "xss-awareness",
+    "title": "Cross-Site Scripting (XSS) Awareness",
+    "chapter": {
+      "title": "Chapter 13: Stored, Reflected, & DOM-Based XSS",
+      "explanation": "Cross-Site Scripting (XSS) occurs when an application includes untrusted data in a web page without proper escaping, letting attackers execute malicious scripts in a victim's browser. XSS is divided into Stored (script is saved in databases, affecting all visitors), Reflected (script is reflected in search terms/error notices), and DOM-Based (vulnerabilities inside client-side JS processing).",
+      "diagram": " [Attacker] ──► Post comment with: <script>steal_cookie()</script> ──► [Stored in DB]\n [Victim]   ◄── Loads compromised page with Stored Script ─────── [Runs script!]",
+      "definitions": {
+        "Stored XSS": "The most dangerous XSS variant, where malicious scripts are permanently stored in database structures, executing in the browsers of all visiting users.",
+        "Content Security Policy (CSP)": "A secure HTTP header declaring which external sources of script, image, or connection execution are trusted by browsers."
+      },
+      "examples": [
+        "Reflected XSS: A URL like 'https://site.com/search?q=<script>alert(1)</script>' executes the script on page load.",
+        "DOM XSS: Passing unvalidated URL parameters directly to innerHTML in frontend Javascript."
+      ],
+      "realWorldExample": "In the infamous Samy worm attack on MySpace, an attacker exploited stored XSS in profile pages. Simply visiting his profile executed a script that added him as a friend and copied the exploit to the visitor's profile, infecting over one million users in 20 hours.",
+      "notes": [
+        "XSS defense requires context-specific output encoding (escaping tags like '<' and '>' to safe HTML entities)."
+      ],
+      "tips": [
+        "To mitigate DOM XSS, avoid using innerHTML; use textContent or innerText instead, which treat values as plain text."
+      ],
+      "summary": "XSS executes unauthorized scripts. Block XSS by using context-aware output escaping, textContent, and strong CSP rules."
+    },
+    "quiz": {
+      "question": "An attacker saves a malicious comment containing '<script>' tags on a forum database. Every user who loads the forum executes the script. What XSS variant is this?",
+      "options": [
+        "Reflected XSS",
+        "Stored XSS",
+        "DOM-Based XSS",
+        "Blind XSS"
+      ],
+      "answer": 1,
+      "explanation": "Stored (Persistent) XSS occurs when the malicious payload is saved in persistent storage (like a database) and served to subsequent users."
+    }
+  },
+  {
+    "id": "csrf-awareness",
+    "title": "Cross-Site Request Forgery (CSRF) Awareness",
+    "chapter": {
+      "title": "Chapter 14: Cross-site Traps & Anti-CSRF Cryptographic Tokens",
+      "explanation": "Cross-Site Request Forgery (CSRF) forces an authenticated user's browser to execute unauthorized actions on a trusted web application. Since browsers append session cookies automatically to requests, attackers can host a malicious page that triggers hidden forms or API requests targeting the victim's authenticated portal.",
+      "diagram": " [Victim Browser] (Logged into bank.com) ─── Visits malicious site.com\n [Victim Browser] ◄── Auto-loads page containing hidden bank form transfer ──\n [Victim Browser] ─── Sends POST /transfer with Bank Cookie ────► [bank.com]\n                                                                 (Executed!)",
+      "definitions": {
+        "CSRF": "An attack that forces a user's browser to send authenticated requests to a third-party application using active session cookies.",
+        "Anti-CSRF Token": "A unique, cryptographically random token associated with the user's session, required in every state-changing POST/PUT request."
+      },
+      "examples": [
+        "Malicious Form: A hidden form on site.com that submits a POST request to 'bank.com/transfer' on page load.",
+        "SameSite Defense: Setting 'SameSite=Strict' on cookies so they are never sent in requests originating from external domains."
+      ],
+      "realWorldExample": "In 2008, a router manufacturer suffered a CSRF vulnerability. Attackers hosted malicious ads on popular sites; when logged-in router admins visited, hidden scripts updated their router DNS settings, routing traffic to malicious servers.",
+      "notes": [
+        "GET requests must always be stateless and safe; state-changing actions should only be processed using POST/PUT requests protected with CSRF tokens."
+      ],
+      "tips": [
+        "Anti-CSRF tokens must be random and unique for each session, and verified server-side before processing any state-changing requests."
+      ],
+      "summary": "CSRF exploits browser cookie mechanics. Secure systems block CSRF using SameSite cookies and unique Anti-CSRF tokens."
+    },
+    "quiz": {
+      "question": "Which cookie attribute prevents Cross-Site Request Forgery (CSRF) attacks by ensuring session cookies are not appended to requests originating from external websites?",
+      "options": [
+        "HttpOnly",
+        "SameSite (Strict or Lax)",
+        "Secure",
+        "Path=/"
+      ],
+      "answer": 1,
+      "explanation": "The SameSite flag controls cookie transfer across origins. Setting Lax or Strict blocks browsers from appending session cookies in cross-site requests."
+    }
+  },
+  {
+    "id": "malware-mechanics",
+    "title": "Malware Mechanics",
+    "chapter": {
+      "title": "Chapter 15: Trojans, Worms, & Persistence Mechanisms",
+      "explanation": "Malicious Software (Malware) is a broad term for code designed to disrupt, spy on, or damage systems. Malware classifications include: Trojans (malware disguised as legitimate files), Worms (self-propagating software that spreads across networks without human intervention), and Backdoors (channels that grant persistent administrative control over systems).",
+      "diagram": "   [TROJAN EXECUTION]          [WORM PROPAGATION]\n   [Legitimate App]             [Infected Host A]\n          │                            │\n          ├─► Drops Malware Payload    ├─► Scans Network Port 445\n          └─► Launches Game            ├─► Exploits Remote Host B\n                                       └─► Copies itself (No user click!)",
+      "definitions": {
+        "Trojan": "A malicious program masquerading as a benign application to trick users into running it.",
+        "Worm": "A standalone, self-replicating malware program that spreads across computer networks without user interaction."
+      },
+      "examples": [
+        "Persistence Mechanism: Modifying Windows Registry keys (e.g., 'HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run') to execute malware automatically on boot.",
+        "Worm Outbreak: The Stuxnet worm, which scanned internal PLC networks to infect industrial facilities."
+      ],
+      "realWorldExample": "The WannaCry worm spread worldwide in minutes by coupling a ransomware payload with the EternalBlue SMB exploit. Once a single host on a network was infected, the worm scanned local subnets and infected adjacent systems without clicking links.",
+      "notes": [
+        "Modern malware uses evasion techniques like fileless execution, running code strictly in RAM to bypass antivirus filesystem scans."
+      ],
+      "tips": [
+        "Worms self-propagate across networks; Trojans require human interaction (downloading and running a malicious file) to execute."
+      ],
+      "summary": "Malware targets systems. Trojans trick users, while self-replicating worms exploit unpatched network vulnerabilities."
+    },
+    "quiz": {
+      "question": "What primary feature distinguishes a Network Worm from a standard Trojan Horse file?",
+      "options": [
+        "Trojans only target Windows systems, while worms target Linux.",
+        "Worms can self-propagate and spread across networks without human interaction.",
+        "Trojans are written exclusively in low-level machine assembly languages.",
+        "Worms require users to click on social engineering links to spread."
+      ],
+      "answer": 1,
+      "explanation": "Worms are self-propagating and spread across networks automatically by exploiting service flaws, whereas Trojans require human interaction to run."
+    }
+  },
+  {
+    "id": "ransomware-tactics",
+    "title": "Ransomware & Extortion Tactics",
+    "chapter": {
+      "title": "Chapter 16: Asymmetric Cryptography & Double Extortion",
+      "explanation": "Ransomware is malicious software that encrypts user files, demanding a cryptocurrency payout to purchase decryption keys. Modern ransomware syndicates employ Double Extortion: they steal sensitive corporate records before encryption, threatening to publish public details on leak sites if payments are refused, making offline backups only partially effective.",
+      "diagram": " [Exfiltrates Records] ──► [Encrypts Files (Symmetric)] ──► [Ransom Notice]\n         │                                                   │\n         └─► Threatens to Leak data ◄────────────────────────┘\n             (Double Extortion)",
+      "definitions": {
+        "Asymmetric Encryption in Ransomware": "The use of public-key cryptography where the local system encrypts files using a public key, but only the private key (held by the attacker) can decrypt them.",
+        "Double Extortion": "A ransomware tactic combining system encryption with data theft to threaten public data leaks."
+      },
+      "examples": [
+        "Symmetric Speed: Ransomware encrypts local drives using fast AES-256 keys, then encrypts those AES keys using an asymmetric RSA public key.",
+        "Leak Portals: Onion routing network portals where ransomware groups list recalcitrant target names."
+      ],
+      "realWorldExample": "In 2021, the Colonial Pipeline network was infected by DarkSide ransomware. Although they possessed backup systems, the threat of public data leaks led them to pay $4.4 million to obtain decryption keys and resume fuel operations.",
+      "notes": [
+        "Paying ransoms does not guarantee attackers will delete stolen data or provide working decryption keys, and often funds further attacks."
+      ],
+      "tips": [
+        "Prevent ransomware by using the 3-2-1 backup rule, segmenting networks, and deploying robust endpoint detection tools."
+      ],
+      "summary": "Ransomware locks files. Double extortion threatens public leaks, requiring robust backup and data security policies."
+    },
+    "quiz": {
+      "question": "Which ransomware methodology describes stealing sensitive corporate data before encrypting local drives, threatening public leaks if a ransom is not paid?",
+      "options": [
+        "Symmetric Encryption",
+        "Double Extortion",
+        "Fileless Hijacking",
+        "DNS Tunneling"
+      ],
+      "answer": 1,
+      "explanation": "Double Extortion combines file encryption with data exfiltration, blackmailing targets with public exposure of stolen files."
+    }
+  },
+  {
+    "id": "spyware-detection",
+    "title": "Spyware & Surveillance Detection",
+    "chapter": {
+      "title": "Chapter 17: Keyloggers, RATs, & Evasion Analysis",
+      "explanation": "Spyware is malware designed to monitor, record, and exfiltrate host computer activity without user knowledge. This includes Keyloggers (logging keystrokes), Remote Access Trojans (RATs, granting full control over hardware cameras, microphones, and file storage), and spyware that modifies browser security settings.",
+      "diagram": " [User Keystrokes] ──► [Hooking API Keylogger] ──► [Logs saved in file]\n                                                     │\n [Exfiltrated to C2] ◄── SMTP/HTTP connection ───────┘",
+      "definitions": {
+        "RAT (Remote Access Trojan)": "A malware program granting attackers full control over a victim's hardware cameras, microphones, files, and system shells.",
+        "Keylogger": "A program that records keystrokes to steal sensitive login credentials and personal records."
+      },
+      "examples": [
+        "API Hooking: Spyware intercepting operating system keyboard functions (e.g. SetWindowsHookEx).",
+        "Process Injection: Injecting spyware code into legitimate system processes like 'explorer.exe' to hide from task managers."
+      ],
+      "realWorldExample": "The Pegasus spyware developed by NSO Group is a sophisticated surveillance tool that can infect devices via 'zero-click' exploits in chat apps. It silent records calls, reads messages, and tracks GPS locations.",
+      "notes": [
+        "Audit running processes, analyze network traffic anomalies, and review app camera/location permissions regularly to detect spyware."
+      ],
+      "tips": [
+        "Always use multi-factor authentication; if a keylogger captures your password, the hacker still cannot log in without your physical authentication token."
+      ],
+      "summary": "Spyware steals information. Protecting systems requires MFA, active process monitoring, and checking device permissions."
+    },
+    "quiz": {
+      "question": "What type of malware is designed to grant an external attacker full administrative and visual control over a compromised system, including cameras, files, and terminal shells?",
+      "options": [
+        "Adware",
+        "Remote Access Trojan (RAT)",
+        "Fileless Worm",
+        "Boot Sector Virus"
+      ],
+      "answer": 1,
+      "explanation": "RATs (Remote Access Trojans) grant attackers a full GUI or shell connection to remotely control cameras, files, and system resources."
+    }
+  },
+  {
+    "id": "incident-response",
+    "title": "Incident Response Protocols",
+    "chapter": {
+      "title": "Chapter 18: Preparation, Eradication, & Lessons Learned",
+      "explanation": "Incident Response (IR) is the structured methodology organizations use to manage and mitigate active cyber breaches. NIST and SANS define the core lifecycle into six stages: Preparation, Identification, Containment, Eradication, Recovery, and Lessons Learned. This ensures organizations can respond to threats rapidly and minimize damages.",
+      "diagram": "  ┌────────────────────────────────────────────────────────┐\n  │             INCIDENT RESPONSE LIFECYCLE                │\n  └─► [1. PREP] ──► [2. IDENTIFY] ──► [3. CONTAIN] ────────┬┘\n                                                           │\n    ┌◄─ [6. LESSONS] ◄── [5. RECOVER] ◄── [4. ERADICATE] ──┘\n    ▼",
+      "definitions": {
+        "Containment": "The phase where security teams isolate compromised hosts or network subnets to prevent lateral movement.",
+        "Eradication": "Identifying and completely removing all elements of threat actors (like backdoors, registry modifications, malware files) from isolated systems."
+      },
+      "examples": [
+        "Containment Action: Disconnecting an infected server's network cable or adding a null routing rule to isolate it.",
+        "Lessons Learned: Meeting post-incident to review response times and update firewall policies to block similar entry vectors."
+      ],
+      "realWorldExample": "During a corporate ransomware breach, the IR team bypassed proper Identification and began restoring files immediately. Because they failed to isolate the network first, the ransomware re-encrypted the restored files, highlighting the necessity of proper Containment first.",
+      "notes": [
+        "Always document and preserve evidence during the Identification phase; rash containment actions like powering down servers can destroy volatile RAM forensics evidence."
+      ],
+      "tips": [
+        "Know the stages: Prep, Identify, Contain, Eradicate, Recover, Lessons Learned. Containment is always performed *before* Eradication."
+      ],
+      "summary": "Incident Response structures breach management. Teams must contain threats before eradicating malware and restoring services."
+    },
+    "quiz": {
+      "question": "According to the NIST Incident Response lifecycle, what must security teams perform immediately AFTER isolating a compromised system (Containment) but BEFORE restoring clean backups (Recovery)?",
+      "options": [
+        "Lessons Learned",
+        "Preparation",
+        "Eradication",
+        "Asset Inventory"
+      ],
+      "answer": 2,
+      "explanation": "After containing the breach, teams must perform Eradication to delete malware, close accounts, and patch vulnerabilities before restoring clean data."
+    }
+  }
+]

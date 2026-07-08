@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CyberShield - Steganography Toolkit</title>
+    <meta name="description" content="Hide and extract secret messages securely inside images using the CyberShield Steganography Toolkit." />
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- CSS stylesheet link -->
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+      /* Smooth fade in */
+      body {
+        opacity: 0;
+        animation: fadeInPage 0.4s ease-out forwards;
+      }
+      @keyframes fadeInPage {
+        to { opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Background visual layers -->
+    <div class="soc-bg-image"></div>
+    <div class="soc-overlay"></div>
+    
+    <!-- Ambient color lights -->
+    <div class="glow-node glow-node-1"></div>
+    <div class="glow-node glow-node-2"></div>
+    <div class="glow-node glow-node-3"></div>
+
+    <!-- React App Root -->
+    <div id="root"></div>
+
+    <!-- Mount React entry point -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

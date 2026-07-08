@@ -1,0 +1,614 @@
+[
+  {
+    "id": "owasp-bac",
+    "title": "OWASP Top 10: Broken Access Control",
+    "chapter": {
+      "title": "Chapter 1: IDOR and Privilege Escalation Vectors",
+      "explanation": "Broken Access Control is the most common vulnerability on the modern web, ranked #1 in the OWASP Top 10. It occurs when applications fail to properly enforce authorization boundaries between users. Attackers exploit these flaws to bypass security checks, access other users' accounts, edit database values, or elevate their privileges to administrators.",
+      "diagram": "  [Victim Link]:      /api/profile?id=5108   ──► Returns Alice's Data\n  [Attacker Change]:  /api/profile?id=5109   ──► [No Server-Side Auth Check!]\n                                               ──► Returns Bob's Private Records!",
+      "definitions": {
+        "IDOR (Insecure Direct Object Reference)": "A vulnerability where an application uses user-supplied keys to access database objects directly without verifying authorization.",
+        "Privilege Escalation": "An exploit where an attacker increases their access privileges (vertical escalation, e.g. guest to admin) or accesses adjacent user profiles (horizontal escalation)."
+      },
+      "examples": [
+        "Horizontal Escalation: Modifying cookie user IDs to view another employee's timesheets.",
+        "Vertical Escalation: Changing a POST request parameter from 'isAdmin: false' to 'isAdmin: true'."
+      ],
+      "realWorldExample": "In 2019, a major real estate transaction site leaked 885 million confidential records due to a simple IDOR vulnerability. Anyone with a web browser could view mortgage documents, tax receipts, and bank account numbers simply by changing sequential ID numbers in the URL path.",
+      "notes": [
+        "Always enforce server-side validation. Never trust authorization parameters sent from client-side browsers or mobile apps."
+      ],
+      "tips": [
+        "To prevent IDOR, use randomized, non-sequential UUIDs (Universally Unique Identifiers) in API paths, and verify user session authorization for every request."
+      ],
+      "summary": "Broken Access Control permits unauthorized access. Block these exploits by using UUIDs and enforcing server-side authorization checks on all requests."
+    },
+    "quiz": {
+      "question": "Which specific vulnerability type describes an attacker accessing another user's private account records simply by modifying a sequential ID number in an API path?",
+      "options": [
+        "SQL Injection (SQLi)",
+        "Insecure Direct Object Reference (IDOR)",
+        "Cross-Site Request Forgery (CSRF)",
+        "Server-Side Request Forgery (SSRF)"
+      ],
+      "answer": 1,
+      "explanation": "IDOR (Insecure Direct Object Reference) happens when users can access specific resources directly by manipulating identifier parameters."
+    }
+  },
+  {
+    "id": "owasp-injection",
+    "title": "OWASP Top 10: Injection Flaws",
+    "chapter": {
+      "title": "Chapter 2: Command, LDAP, and SQL Injection",
+      "explanation": "Injection vulnerabilities occur when untrusted data is passed as part of a command or query. The interpreter executes the input as code, letting attackers execute arbitrary commands, delete data, or read system directories. Common injection vectors include SQL, LDAP, XML, and OS Command Injection.",
+      "diagram": "  Backend Command: \"ping -c 1 \" + input\n  Malicious Input:  8.8.8.8 ; cat /etc/passwd\n  Executed Shell:   ping -c 1 8.8.8.8 ; cat /etc/passwd\n                                      └───── Executes secondary shell command! ──┘",
+      "definitions": {
+        "OS Command Injection": "An exploit where an attacker executes arbitrary operating system commands on the server hosting the application.",
+        "Interpreter": "A system program (such as bash, cmd, or sql engine) that reads and executes code syntax on a host."
+      },
+      "examples": [
+        "OS Command Injection: Appending shell control characters (e.g., ';', '&&', '|') to execute backend commands.",
+        "LDAP Injection: Manipulating input fields to bypass LDAP directory query filters and list corporate passwords."
+      ],
+      "realWorldExample": "In 2021, a vulnerability in a popular logging framework (Log4Shell) let attackers send malformed strings that triggered remote servers to download and execute arbitrary Java code, compromising hundreds of millions of servers globally.",
+      "notes": [
+        "Avoid passing inputs directly to system shells. Use native programming language APIs instead of shell utilities wherever possible."
+      ],
+      "tips": [
+        "Sanitize and validate inputs using strict whitelist filters (accepting only allowed characters), and use prepared parameters to block injection attacks."
+      ],
+      "summary": "Injection flaws occur when data is parsed as executable code. Block injection by parameterizing queries and avoiding shell execution."
+    },
+    "quiz": {
+      "question": "Which of the following approaches is the most secure method for preventing OS Command Injection vulnerabilities in backend web services?",
+      "options": [
+        "Filtering out common shell commands like 'cat' or 'ls' from user inputs.",
+        "Encoding special characters to safe HTML entities.",
+        "Avoiding the execution of system shell commands, using native program APIs instead.",
+        "Encrypting user inputs with symmetric cryptosystems before processing."
+      ],
+      "answer": 2,
+      "explanation": "Avoiding system shell execution altogether and utilizing native programming language libraries is the safest way to prevent OS Command Injection."
+    }
+  },
+  {
+    "id": "owasp-misconfig",
+    "title": "OWASP Top 10: Security Misconfigurations",
+    "chapter": {
+      "title": "Chapter 3: Default Credentials and Exposed Directories",
+      "explanation": "Security Misconfiguration happens when systems are deployed with default passwords, unnecessary ports open, debugging modes enabled, or open directories. Attackers scan networks for these misconfigurations to easily bypass systems and access admin interfaces.",
+      "diagram": " [Attacker] ──► Hits: /admin/config ──► [Debug Mode Enabled: Prints Variables]\n                                     ──► [Exposes API keys, database hashes!]",
+      "definitions": {
+        "Default Credentials": "Standard usernames and passwords (like admin/admin or root/password) pre-set by hardware vendors.",
+        "Directory Browsing": "A server configuration that lists all files in a folder when an index.html file is missing, exposing internal code."
+      },
+      "examples": [
+        "Default Login: Leaving default login details active on corporate routers or intranet portals.",
+        "Exposed Debugging: Leaving detailed stack traces enabled on production servers, leaking internal server directories."
+      ],
+      "realWorldExample": "The devastating Mirai botnet infected millions of IoT devices (including cameras and routers) simply by scanning the internet for Port 23 (Telnet) and trying 60 combinations of default vendor passwords.",
+      "notes": [
+        "Enforcing secure configuration standards requires auditing cloud environments and disabling unnecessary services."
+      ],
+      "tips": [
+        "Always disable debugging modes in production environments, and change all default passwords during initial hardware setups."
+      ],
+      "summary": "Exposed debuggers and default credentials invite attacks. Automating secure deployment checks prevents configuration errors."
+    },
+    "quiz": {
+      "question": "Which attack vector did the Mirai botnet exploit to compromise millions of active smart devices and launch record-breaking DDoS attacks?",
+      "options": [
+        "A zero-day SQL injection vulnerability in web frameworks.",
+        "Unchanged default administrative credentials on open Telnet ports.",
+        "An authentication bypass exploit in encrypted TLS layers.",
+        "A memory overflow flaw in operating system kernels."
+      ],
+      "answer": 1,
+      "explanation": "Mirai scanned the public internet for open Telnet ports (TCP 23) and logged in using default manufacturer passwords."
+    }
+  },
+  {
+    "id": "owasp-crypto-failures",
+    "title": "OWASP Top 10: Cryptographic Failures",
+    "chapter": {
+      "title": "Chapter 4: Weak Ciphers and Unencrypted Transport",
+      "explanation": "Cryptographic Failures (previously Sensitive Data Exposure) happen when systems use weak encryption algorithms, store secrets in plain text, transmit data over unencrypted HTTP, or fail to validate TLS certificates. This lets attackers intercept or decrypt sensitive communications.",
+      "diagram": " [Plaintext Data] ──► SHA-1 (No Salt/Weak) ──► easily cracked with rainbow tables\n\n [Plaintext Data] ──► AES-GCM (Strong)      ──► secure from brute force attacks",
+      "definitions": {
+        "Symmetric Cipher": "An encryption method that uses a single shared key to both encrypt and decrypt data.",
+        "MD5 / SHA-1": "Legacy hashing algorithms that are considered cryptographically broken due to collision vulnerabilities."
+      },
+      "examples": [
+        "Weak Hashing: Storing password databases using simple MD5 hashes without salt values.",
+        "Plaintext Transport: Transmitting customer credit card forms over unencrypted HTTP ports."
+      ],
+      "realWorldExample": "A medical records system used legacy DES encryption to secure patient files. Because DES uses a short 56-bit key, attackers intercepted the encrypted database and brute-forced the key in hours, exposing patient details.",
+      "notes": [
+        "Always use industry-standard cryptographic algorithms like AES-GCM, SHA-256, and bcrypt. Never design proprietary cryptographic algorithms."
+      ],
+      "tips": [
+        "Use modern transport standards like HTTP Strict Transport Security (HSTS) to force browsers to always use secure HTTPS connections."
+      ],
+      "summary": "Weak hashes and cleartext transfers compromise data. Protect records by using HSTS and standard modern cryptosystems."
+    },
+    "quiz": {
+      "question": "Which of the following hashing algorithms is considered cryptographically broken and should never be used for storing user credentials?",
+      "options": [
+        "Argon2",
+        "SHA-256",
+        "MD5",
+        "bcrypt"
+      ],
+      "answer": 2,
+      "explanation": "MD5 is obsolete and vulnerable to rapid collision attacks, letting systems generate identical hashes for different inputs."
+    }
+  },
+  {
+    "id": "owasp-auth-failures",
+    "title": "OWASP Top 10: Authentication Failures",
+    "chapter": {
+      "title": "Chapter 5: Credential Stuffing and Session Fixation",
+      "explanation": "Authentication Failures happen when applications let attackers brute-force login screens, execute credential stuffing attacks, or hijack active session IDs. This lets adversaries impersonate users and bypass identity checks.",
+      "diagram": " [Attacker API] ──► Tries 10,000 leaked passwords/sec ──► [No Rate Limiting!]\n                                                      ──► Logs into account",
+      "definitions": {
+        "Credential Stuffing": "An automated attack where lists of leaked username/password pairs are tested against multiple sites to hijack accounts.",
+        "Rate Limiting": "A protective constraint that limits the number of requests a user can make within a specific timeframe."
+      },
+      "examples": [
+        "No Rate Limiting: Allowing unlimited password attempts on a login page, making brute-force attacks easy.",
+        "Session Fixation: Letting a user's session identifier remain unchanged after they log in, letting attackers hijack sessions."
+      ],
+      "realWorldExample": "In 2020, attackers stuffed leaked credentials into a major online gaming system, accessing thousands of accounts with active payment details because the portal lacked login rate limiting.",
+      "notes": [
+        "Prevent authentication failures by implementing multi-factor authentication, enforcing strong passwords, and rate-limiting login endpoints."
+      ],
+      "tips": [
+        "Always rotate and regenerate session IDs immediately after a user successfully logs in to prevent session fixation exploits."
+      ],
+      "summary": "Weak logins invite brute-force attacks. Protect accounts using MFA, robust password rules, and strict login rate limits."
+    },
+    "quiz": {
+      "question": "What security control is explicitly designed to block automated credential stuffing and dictionary attacks on login portals?",
+      "options": [
+        "Symmetric encryption on input fields",
+        "API Rate Limiting and login lockout thresholds",
+        "Using HTTP GET requests instead of POST requests",
+        "Configuring strict SameSite cookie attributes"
+      ],
+      "answer": 1,
+      "explanation": "Rate limiting restricts the frequency of login requests, blocking automated scripts that test thousands of leaked passwords in seconds."
+    }
+  },
+  {
+    "id": "owasp-ssrf",
+    "title": "OWASP Top 10: Server-Side Request Forgery (SSRF)",
+    "chapter": {
+      "title": "Chapter 6: Cloud Metadata and Internal Network Probing",
+      "explanation": "Server-Side Request Forgery (SSRF) is a vulnerability where a web application fetches a remote resource without validating the user-supplied URL. Attackers exploit SSRF to force the server to send crafted requests to internal resources, accessing private backend databases or cloud metadata services.",
+      "diagram": " [Attacker] ──► Sends: /fetch-image?url=http://169.254.169.254/latest/meta-data/\n [Server]   ──► [No URL Validation Check!]\n            ──► Queries AWS Cloud Instance Metadata Service internally\n [Attacker] ◄── [Exposes IAM Credentials & Admin Cloud Keys!]",
+      "definitions": {
+        "SSRF": "A vulnerability letting attackers force server applications to send unauthorized HTTP requests to internal resources.",
+        "Link-Local Address (169.254.169.254)": "A non-routable IP address used in cloud platforms (like AWS or GCP) to expose server metadata and temporary admin tokens."
+      },
+      "examples": [
+        "Cloud Metadata Theft: Requesting 'http://169.254.169.254/' to harvest cloud access keys.",
+        "Internal Port Probing: Requesting 'http://localhost:5432/' to check if a PostgreSQL database is running locally."
+      ],
+      "realWorldExample": "In 2019, a major financial corporation was breached via an SSRF vulnerability in a public web app. Attackers forced the server to query its cloud metadata endpoint, stealing IAM access keys and downloading 100 million customer records.",
+      "notes": [
+        "Never trust user-supplied URLs. Block SSRF by implementing strict URL whitelists and restricting servers from querying internal subnets."
+      ],
+      "tips": [
+        "Be aware of IP address bypasses (like decimal equivalents or lookalike domains) that attackers use to bypass blacklist filters."
+      ],
+      "summary": "SSRF forces servers to query internal assets. Prevent SSRF by validating URLs against a whitelist of trusted domains."
+    },
+    "quiz": {
+      "question": "Why is the cloud link-local IP address '169.254.169.254' a primary target for attackers exploiting Server-Side Request Forgery (SSRF) vulnerabilities?",
+      "options": [
+        "It contains the public website content database.",
+        "It hosts public-key cryptography certificates for the site.",
+        "It hosts cloud metadata APIs that expose sensitive IAM administrative tokens.",
+        "It represents the default local gateway router for internet traffic."
+      ],
+      "answer": 2,
+      "explanation": "In AWS, GCP, and Azure, the address 169.254.169.254 exposes instance metadata. Compromising it via SSRF can leak administrative cloud credentials."
+    }
+  },
+  {
+    "id": "crypto-symmetric",
+    "title": "Cryptography: Symmetric Encryption",
+    "chapter": {
+      "title": "Chapter 7: AES-GCM, Block Ciphers, and Initialization Vectors",
+      "explanation": "Symmetric cryptography uses a single shared key to both encrypt and decrypt data. Modern standards rely on AES (Advanced Encryption Standard). Block ciphers split plaintext into blocks, using modes like GCM (Galois/Counter Mode, which provides both secrecy and integrity validation) and dynamic Initialization Vectors (IVs) to ensure identical plaintexts produce unique cyphertexts.",
+      "diagram": "  [Plaintext Block] ──► [AES Encryptor] ──► [Ciphertext]\n                             ▲\n                       [Symmetric Key]",
+      "definitions": {
+        "AES-GCM": "An authenticated symmetric encryption mode that provides both confidentiality and data integrity checks.",
+        "Initialization Vector (IV)": "A random, non-secret value used to ensure identical plaintexts encrypt to different ciphertexts."
+      },
+      "examples": [
+        "Strong Symmetric Encryption: Encrypting server logs using AES-256-GCM before uploading to backup storage.",
+        "IV Reuse Vulnerability: Reusing the same IV on two different records, letting attackers decrypt data without knowing the key."
+      ],
+      "realWorldExample": "In WWII, Germany's Enigma machine used a symmetric cipher system. However, operators regularly made mistakes like using predictable initialization variables, letting Allied cryptanalysts break the cipher system.",
+      "notes": [
+        "Symmetric encryption is fast and efficient, making it ideal for encrypting large files, databases, and continuous stream data."
+      ],
+      "tips": [
+        "Never use legacy ECB mode for AES encryption; it does not hide patterns in plaintext, making it vulnerable to analysis."
+      ],
+      "summary": "Symmetric encryption uses a single shared key. Block ciphers like AES-GCM require random IVs to ensure secure output."
+    },
+    "quiz": {
+      "question": "Which mode of the Advanced Encryption Standard (AES) provides both data confidentiality and integrated message integrity checks?",
+      "options": [
+        "AES-ECB (Electronic Codebook)",
+        "AES-CBC (Cipher Block Chaining)",
+        "AES-GCM (Galois/Counter Mode)",
+        "AES-CTR (Counter Mode)"
+      ],
+      "answer": 2,
+      "explanation": "AES-GCM is an Authenticated Encryption with Associated Data (AEAD) mode that guarantees confidentiality and verifies message integrity."
+    }
+  },
+  {
+    "id": "crypto-asymmetric",
+    "title": "Cryptography: Asymmetric Encryption",
+    "chapter": {
+      "title": "Chapter 8: RSA, Elliptic Curves, and Key Exchange",
+      "explanation": "Asymmetric cryptography uses mathematically linked key pairs: a Public Key (distributed openly) and a Private Key (kept strictly secret). Data encrypted with the public key can only be decrypted with the private key. Modern systems rely on RSA or Elliptic Curve Cryptography (ECC, which provides comparable security with shorter key lengths).",
+      "diagram": "  [Plaintext] ──► Encrypt with Public Key ──► [Ciphertext]\n                                                   │\n  [Plaintext] ◄── Decrypt with Private Key ◄───────┘",
+      "definitions": {
+        "Asymmetric Cryptography": "A cryptographic model using mathematically linked key pairs to provide secure key exchange and digital signatures.",
+        "ECC (Elliptic Curve Cryptography)": "A modern asymmetric approach based on the algebraic structure of elliptic curves, offering fast processing and short keys."
+      },
+      "examples": [
+        "Safe Exchange: Negotiating shared symmetric keys over the public internet using Diffie-Hellman.",
+        "Secure Shell (SSH): Logging into a server using an asymmetric RSA key pair."
+      ],
+      "realWorldExample": "Bitcoin and other blockchains utilize Elliptic Curve Cryptography (specifically the secp256k1 curve) to generate wallet addresses and sign transactions securely without a central authority.",
+      "notes": [
+        "Asymmetric key generation relies on the mathematical difficulty of factoring large prime numbers (RSA) or solving discrete logarithms (ECC)."
+      ],
+      "tips": [
+        "Asymmetric encryption is computationally slow, so it is typically only used to exchange symmetric keys during initial handshakes."
+      ],
+      "summary": "Asymmetric cryptography uses public-private key pairs to verify digital identities and establish secure connections."
+    },
+    "quiz": {
+      "question": "What is the primary benefit of Elliptic Curve Cryptography (ECC) compared to traditional RSA cryptosystems?",
+      "options": [
+        "ECC does not require private key storage.",
+        "ECC provides equivalent security thresholds with significantly shorter key lengths.",
+        "ECC operates strictly inside hardware memory chips.",
+        "ECC eliminates the need for mathematical prime factoring."
+      ],
+      "answer": 1,
+      "explanation": "ECC provides robust security using much smaller key sizes (e.g. 256-bit ECC matches 3072-bit RSA), saving CPU cycles and storage space."
+    }
+  },
+  {
+    "id": "crypto-hashing",
+    "title": "Cryptography: Hashing Algorithms",
+    "chapter": {
+      "title": "Chapter 9: SHA-256 checksums and Avalanche Effects",
+      "explanation": "A cryptographic hash function converts arbitrary inputs into fixed-length hex strings. Hashes are designed to be one-way (irreversible), collision-resistant (no two different inputs produce the same hash), and demonstrate the Avalanche Effect (a minor input change completely alters the hash output).",
+      "diagram": "  Hash(\"cyber\")     ──► e3b0c442...8fc1d42a\n  Hash(\"cybera\")    ──► a6f8c42b...c39f104d\n                     (Avalanche Effect: Entire output changes!)",
+      "definitions": {
+        "One-Way Function": "A mathematical function that is easy to compute in one direction but virtually impossible to reverse.",
+        "Collision": "A rare error condition where two different inputs produce the identical hash output."
+      },
+      "examples": [
+        "Integrity Check: Verifying ISO file downloads match the publisher's SHA-256 hash checksum.",
+        "Digital Signature: Hashing a document before signing it to verify it was not modified."
+      ],
+      "realWorldExample": "The SHA-256 hashing algorithm is used in the Bitcoin blockchain. Miners compete to find hash values containing specific patterns, securing the decentralized transaction ledger.",
+      "notes": [
+        "Hashing is a one-way integrity check. It cannot be 'decrypted' back to plaintext; values can only be verified by comparing hashes."
+      ],
+      "tips": [
+        "The 'Avalanche Effect' is a vital feature of strong hash functions, ensuring tiny changes to input files produce totally unrecognizable hash values."
+      ],
+      "summary": "Hashing provides a one-way integrity check. Minor input changes produce totally unique hash outputs."
+    },
+    "quiz": {
+      "question": "Which term describes the cryptographic property where a minor change in the input data produces a completely unrecognizable hash output?",
+      "options": [
+        "Collision Resistance",
+        "Avalanche Effect",
+        "Symmetric Convergence",
+        "Entropy Scaling"
+      ],
+      "answer": 1,
+      "explanation": "The Avalanche Effect ensures that changing even a single bit in the input produces a totally different hash, making outputs unpredictable."
+    }
+  },
+  {
+    "id": "crypto-signatures",
+    "title": "Cryptography: Digital Signatures",
+    "chapter": {
+      "title": "Chapter 10: Non-repudiation and Authenticity Verification",
+      "explanation": "Digital signatures use asymmetric cryptography to provide authenticity and Non-Repudiation (proving a sender sent a specific message). To create a signature, the sender hashes the document and encrypts the hash with their Private Key. Anyone can verify the signature's authenticity using the sender's public key.",
+      "diagram": "  [Sender Hash] ──► Encrypt with Private Key ──► [Digital Signature]\n                                                       │\n  [Sender Hash] ◄── Decrypt with Public Key  ◄─────────┘\n  (Verifies identity & document integrity)",
+      "definitions": {
+        "Digital Signature": "A cryptographic value verifying a document's source and integrity.",
+        "Non-Repudiation": "A security status proving a specific user performed an action, preventing them from denying it."
+      },
+      "examples": [
+        "Email Signing: Signing financial emails with a PGP private key to verify the sender's identity.",
+        "Software Updates: Signing installer files so computers only run authentic updates."
+      ],
+      "realWorldExample": "In 2015, researchers demonstrated an exploit where hackers intercepted a vehicle's cellular gateway and pushed unsigned firmware updates, taking remote control of brakes and steering.",
+      "notes": [
+        "Always verify digital signatures on downloaded installer packages to prevent running compromised software updates."
+      ],
+      "tips": [
+        "Signing uses the private key to encrypt; verification uses the public key to decrypt. This is the exact opposite of standard asymmetric encryption."
+      ],
+      "summary": "Digital signatures use private keys to sign files, verifying document source and preventing tampering."
+    },
+    "quiz": {
+      "question": "Which key is used to decrypt and verify a digital signature on a downloaded software application?",
+      "options": [
+        "The sender's Private Key",
+        "The sender's Public Key",
+        "The receiver's Private Key",
+        "The receiver's Public Key"
+      ],
+      "answer": 1,
+      "explanation": "The sender signs files with their Private Key. Anyone can verify the signature's authenticity using the sender's Public Key."
+    }
+  },
+  {
+    "id": "crypto-ssl-tls",
+    "title": "Cryptography: SSL/TLS Protocols",
+    "chapter": {
+      "title": "Chapter 11: Perfect Forward Secrecy and Cipher Suites",
+      "explanation": "SSL/TLS protocols secure network communications using asymmetric handshakes and symmetric encryption. Modern TLS 1.3 optimizes handshakes, supports Perfect Forward Secrecy (PFS, which prevents captured session traffic from being decrypted even if the server's private key is leaked in the future), and disables weak cipher suites.",
+      "diagram": "  TLS 1.2 Cipher: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256\n                     │       │         │       │\n                Exchange   Sign   Encryption  Hash",
+      "definitions": {
+        "Perfect Forward Secrecy (PFS)": "A cryptographic design where session keys are generated dynamically for each session, ensuring past sessions are secure if server keys are compromised.",
+        "Cipher Suite": "A standardized set of cryptographic algorithms used to establish secure TLS connections."
+      },
+      "examples": [
+        "PFS Exchange: Utilizing ephemeral Diffie-Hellman (ECDHE) to negotiate unique keys for each browser session.",
+        "Weak Ciphers: Rejecting connections that attempt to use legacy RC4 or 3DES ciphers."
+      ],
+      "realWorldExample": "The Heartbleed bug in 2014 exploited legacy TLS heartbeat extensions, letting attackers extract server private keys from memory, illustrating the need for PFS to protect historic session traffic.",
+      "notes": [
+        "TLS 1.3 is the modern standard, removing weak ciphers and establishing connections in a single round-trip handshake."
+      ],
+      "tips": [
+        "A cipher suite defines four algorithms: Key Exchange (e.g. ECDHE), Authentication (e.g. RSA), Encryption (e.g. AES), and Integrity (e.g. SHA)."
+      ],
+      "summary": "TLS secures web connections. Modern TLS 1.3 uses PFS to protect past communications even if server keys are leaked."
+    },
+    "quiz": {
+      "question": "Which cryptographic property ensures that historical encrypted network traffic cannot be decrypted even if an attacker steals the server's master private key in the future?",
+      "options": [
+        "Asymmetric Redundancy",
+        "Perfect Forward Secrecy (PFS)",
+        "Symmetric Hashing",
+        "Entropy Convergence"
+      ],
+      "answer": 1,
+      "explanation": "Perfect Forward Secrecy (PFS) negotiates dynamic, temporary session keys, protecting past communications from being decrypted with stolen master keys."
+    }
+  },
+  {
+    "id": "crypto-pki",
+    "title": "Cryptography: Public Key Infrastructure (PKI)",
+    "chapter": {
+      "title": "Chapter 12: Trust Anchors, CRLs, and OCSP Checks",
+      "explanation": "Public Key Infrastructure (PKI) manages digital certificates, keys, and trust relationships. It uses a hierarchy of trusted Certificate Authorities (CAs). Browsers verify certificates by checking trust anchors in the local OS, checking revocation status using Certificate Revocation Lists (CRLs) or Online Certificate Status Protocol (OCSP) queries.",
+      "diagram": " [Root Certificate Authority (Trust Anchor)] ──► Signs: [Intermediate CA]\n                                                    ──► Signs: [cybershield.org]",
+      "definitions": {
+        "PKI": "The framework of hardware, software, roles, and policies needed to manage digital certificates and public keys.",
+        "OCSP Stapling": "An optimization where servers fetch and send time-stamped OCSP revocation proofs directly to browsers, speeding up handshakes."
+      },
+      "examples": [
+        "Root Store: A list of pre-trusted Root CAs stored in local OS and browser settings.",
+        "Certificate Revocation: Revoking a certificate immediately if a server's private key is exposed."
+      ],
+      "realWorldExample": "In 2011, attackers compromised a CA named DigiNotar, issuing hundreds of fake certificates for major domains. Browsers blacklisted DigiNotar, highlighting the trust dependencies of the global PKI system.",
+      "notes": [
+        "Always monitor certificate expiration dates and use automated tools like Let's Encrypt to handle renewals."
+      ],
+      "tips": [
+        "OCSP stapling improves speed and privacy by letting servers handle revocation checks instead of forcing browsers to query CAs directly."
+      ],
+      "summary": "PKI manages digital certificate trusts. Checking revocation status prevents browsers from trusting compromised certificates."
+    },
+    "quiz": {
+      "question": "Which mechanism lets a web server fetch and provide time-stamped CA revocation proofs directly to browsers during the TLS handshake, improving both performance and privacy?",
+      "options": [
+        "Certificate Revocation List (CRL)",
+        "OCSP Stapling",
+        "Asymmetric Key Exchange",
+        "DNSSEC Verification"
+      ],
+      "answer": 1,
+      "explanation": "OCSP Stapling lets the server query the CA's revocation status, stapling the signed proof to the certificate during the TLS handshake."
+    }
+  },
+  {
+    "id": "forensics-disk",
+    "title": "Digital Forensics: Disk Forensics",
+    "chapter": {
+      "title": "Chapter 13: Write Blockers, Bitstream Images, and Slack Space",
+      "explanation": "Disk Forensics involves extracting and analyzing data from storage media. To preserve evidence integrity, analysts use hardware Write Blockers to prevent the examiner's workstation from modifying media data. They create raw Bitstream Images (sector-by-sector copies) and extract hidden files from 'Slack Space' (unused space at the end of storage sectors).",
+      "diagram": " [Evidence Disk] ──► [Hardware Write Blocker] ──► [Examiner Workstation]\n                                                 (Saves DD/E01 Bitstream Image)",
+      "definitions": {
+        "Write Blocker": "A hardware or software tool that blocks host computers from writing to connected storage media.",
+        "Slack Space": "The unused space between the end of a file's data and the physical end of the storage sector."
+      },
+      "examples": [
+        "Forensic Copying: Using the 'dd' command to create bitstream raw image copies of storage drives.",
+        "File Carving: Extracting deleted PDF documents from disk images based on specific file signatures."
+      ],
+      "realWorldExample": "In a corporate espionage case, an employee deleted sensitive documents before resigning. Forensics analysts created a bitstream image of the drive, recovered the files from slack space, and proved data theft.",
+      "notes": [
+        "Never perform analysis directly on original evidence drives. Always work on certified, bitstream forensic copies."
+      ],
+      "tips": [
+        "Always calculate and record MD5/SHA-256 hashes of original media before and after copying to prove evidence integrity."
+      ],
+      "summary": "Disk Forensics extracts stored data. Use write blockers and bitstream images to preserve original evidence."
+    },
+    "quiz": {
+      "question": "What is the primary reason forensic examiners use hardware Write Blockers when connecting original evidence drives to their workstations?",
+      "options": [
+        "To speed up the sector copying process.",
+        "To prevent host operating systems from modifying data on evidence drives.",
+        "To encrypt evidence files before saving them to disk.",
+        "To recover deleted files from disk slack space automatically."
+      ],
+      "answer": 1,
+      "explanation": "Write blockers prevent host operating systems from writing metadata or files to connected evidence drives, preserving original evidence integrity."
+    }
+  },
+  {
+    "id": "forensics-memory",
+    "title": "Digital Forensics: Memory Forensics",
+    "chapter": {
+      "title": "Chapter 14: Volatile Data, RAM Dumps, and Volatility Analysis",
+      "explanation": "Memory Forensics analyzes volatile Random Access Memory (RAM). Unlike hard drives, RAM contains active, decrypted system state data: running processes, network connections, loaded encryption keys, and typed passwords. Memory data is lost on shutdown, making RAM acquisition a top priority during active breaches.",
+      "diagram": " [Active Malware in RAM] ──► Acquire Memory Dump ──► Analyze with Volatility\n (Holds decryption keys, passwords)                     (List processes, connections)",
+      "definitions": {
+        "Volatile Data": "Temporary data stored in RAM that is lost immediately when a system is powered off.",
+        "Volatility": "An industry-standard open-source command-line framework used to analyze raw RAM dumps."
+      },
+      "examples": [
+        "RAM Acquisition: Using tools like LiME or FTK Imager to save active memory states.",
+        "Volatility Command: Running 'vol.py -f mem.raw windows.pslist' to list active processes."
+      ],
+      "realWorldExample": "An enterprise was infected by fileless malware that ran strictly in RAM. Because the malware never wrote files to disk, traditional antivirus missed it. IR analysts acquired a RAM dump, identified malicious processes with Volatility, and extracted the C2 IP address.",
+      "notes": [
+        "Powering off infected systems destroys volatile memory data, losing crucial forensics details."
+      ],
+      "tips": [
+        "Order of Volatility dictates collecting RAM data *before* moving to persistent disks or backups."
+      ],
+      "summary": "Memory Forensics extracts active system states from RAM, revealing running malware, decrypted keys, and passwords."
+    },
+    "quiz": {
+      "question": "According to the Order of Volatility, which of the following system components should be acquired first during a digital forensics investigation?",
+      "options": [
+        "Persistent solid-state drives (SSD)",
+        "Random Access Memory (RAM)",
+        "System backups stored on tape drives",
+        "Printed network routing diagrams"
+      ],
+      "answer": 1,
+      "explanation": "RAM is highly volatile and is lost immediately if powered off. It must be acquired before persistent drives or secondary backups."
+    }
+  },
+  {
+    "id": "forensics-logs",
+    "title": "Digital Forensics: Log Analysis",
+    "chapter": {
+      "title": "Chapter 15: Event Logs, Syslog, and Correlation Engines",
+      "explanation": "Log Analysis parses system logs (operating system event logs, firewalls, web server logs) to reconstruct attack timelines. Security teams use SIEM (Security Information and Event Management) platforms to aggregate logs, correlate events in real-time, and detect threat behavior across networks.",
+      "diagram": " [Firewall Log] ──┐\n [Web Server Log] ─┼─► [SIEM Correlation Engine] ──► [Alert: Active SQLi attack]\n [Syslog Stream] ──┘",
+      "definitions": {
+        "SIEM": "Platforms that aggregate and analyze security logs from diverse network devices in real-time.",
+        "Syslog": "A standard protocol used to transmit system status and log messages to a centralized storage server."
+      },
+      "examples": [
+        "Log Correlation: Detecting an administrative login immediately after a series of failed password attempts.",
+        "Querying SIEM: Running queries in Splunk to list external IPs requesting private configuration files."
+      ],
+      "realWorldExample": "During a post-breach audit, analysts correlated web server access logs with database logs, proving an attacker bypassed authentication using SQL injection and downloaded user data.",
+      "notes": [
+        "Ensure server clocks are synchronized using NTP; inconsistent timestamps make log correlation across systems difficult."
+      ],
+      "tips": [
+        "Use central log servers to prevent attackers from deleting local logs to cover their tracks."
+      ],
+      "summary": "Log analysis reconstructs attack timelines. Security teams centralize logs in SIEMs to aggregate, correlate, and detect active threats."
+    },
+    "quiz": {
+      "question": "What core technology is explicitly designed to aggregate, store, correlate, and analyze security logs from diverse devices across an enterprise in real-time?",
+      "options": [
+        "DNSSEC Resolver",
+        "SIEM (Security Information and Event Management)",
+        "Symmetric Key Directory",
+        "Dynamic Host Configuration Protocol (DHCP)"
+      ],
+      "answer": 1,
+      "explanation": "SIEM platforms centralize log aggregation, correlation, alert generation, and compliance reporting across an enterprise."
+    }
+  },
+  {
+    "id": "forensics-evidence",
+    "title": "Digital Forensics: Evidence Collection",
+    "chapter": {
+      "title": "Chapter 16: Volatile Order, Write Blockers, and Integrity Hashes",
+      "explanation": "Evidence Collection requires strict adherence to legal standards to ensure evidence remains admissible in court. Examiners must follow the Order of Volatility, utilize hardware write-blockers during acquisition, calculate integrity hash values immediately, and store physical evidence in secure static-shielding bags.",
+      "diagram": " [Device Acquired] ──► Calculate SHA-256 Hash ──► Secure in Static Bag ──► Document\n                                                           (Preserves admissibility)",
+      "definitions": {
+        "Order of Volatility": "The sequence for collecting evidence based on how quickly data is lost (RAM, swap space, local disks, network shares).",
+        "Evidence Hash Checksum": "A digital fingerprint (like SHA-256) calculated immediately on acquisition to prove evidence files have not changed."
+      },
+      "examples": [
+        "Volatile Collection: Collecting active network connections and RAM dumps before turning off systems.",
+        "Integrity Hash: Recording the SHA-256 checksum of a disk image immediately after creation."
+      ],
+      "realWorldExample": "A corporate espionage case was dismissed in court because examiners failed to calculate hash values for acquired disk images, letting defense lawyers argue the files could have been altered after acquisition.",
+      "notes": [
+        "Never perform analysis directly on original evidence files. Always create and work on certified, bitstream forensic copies."
+      ],
+      "tips": [
+        "Always document each step of the collection process, including tool versions, serial numbers, and exact timestamps."
+      ],
+      "summary": "Evidence collection requires strict adherence to standards. Secure original devices, calculate checksum hashes, and work exclusively on forensic copies."
+    },
+    "quiz": {
+      "question": "Why must forensic examiners calculate cryptographic checksums (like SHA-256 hashes) immediately after acquiring a digital evidence drive?",
+      "options": [
+        "To compress the evidence drive data for storage.",
+        "To decrypt system files on the evidence drive.",
+        "To prove the evidence has not been modified or tampered with since acquisition.",
+        "To identify the operating system running on the evidence drive."
+      ],
+      "answer": 2,
+      "explanation": "Matching hash values prove evidence files have not changed since acquisition, verifying evidence integrity and admissibility in court."
+    }
+  },
+  {
+    "id": "forensics-chain",
+    "title": "Digital Forensics: Chain of Custody",
+    "chapter": {
+      "title": "Chapter 17: Custody Records and Admissibility",
+      "explanation": "The Chain of Custody is a chronological paper trail documenting the collection, custody, transfer, analysis, and disposal of physical and digital evidence. A broken chain of custody can completely undermine evidence credibility, rendering it inadmissible in court.",
+      "diagram": " [Evidence Collected] ──► Officer A signs ──► [Evidence Locker] ──► Officer B signs\n                           (Every transfer must be documented chronologically)",
+      "definitions": {
+        "Chain of Custody": "A legal record documenting every person who has accessed, transferred, or analyzed an evidence item.",
+        "Admissibility": "The legal status of whether evidence is permitted to be introduced in a court of law."
+      },
+      "examples": [
+        "Chain Log: Signing a physical transfer form when moving an evidence drive from storage to an analysis lab.",
+        "Audit Trail: An automated log inside an evidence management database tracking access to forensic files."
+      ],
+      "realWorldExample": "In a high-profile cybercrime trial, key evidence was excluded because the storage locker lacked a log tracking access during a two-week period, representing a broken chain of custody.",
+      "notes": [
+        "Always store evidence in a secure, audited environment, and document every transfer with signatures and timestamps."
+      ],
+      "tips": [
+        "Treat the Chain of Custody as a zero-tolerance policy. Any gap in tracking can ruin months of investigation work."
+      ],
+      "summary": "The Chain of Custody is a chronological log of evidence access, critical for ensuring admissibility in court."
+    },
+    "quiz": {
+      "question": "What is the primary legal consequence of failing to maintain a complete, unbroken Chain of Custody log for digital evidence items?",
+      "options": [
+        "The evidence drive data will corrupt automatically.",
+        "The evidence may be ruled inadmissible in a court of law.",
+        "The cryptographic hash values of the evidence will change.",
+        "The examiner will lose their operating system certifications."
+      ],
+      "answer": 1,
+      "explanation": "Failing to maintain an unbroken Chain of Custody makes evidence vulnerable to claims of tampering, which often renders it inadmissible."
+    }
+  }
+]

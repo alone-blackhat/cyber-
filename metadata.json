@@ -1,0 +1,8 @@
+{
+  "name": "CyberShield Awareness",
+  "description": "A premium, futuristic Cyber Security Awareness platform featuring an interactive 3D Globe Live Attack Simulation, security dashboard, learning hub, and cryptographic chat interface.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CyberShield Awareness - Security Operations Center Access</title>
+    <meta name="description" content="Secure portal access for CyberShield security awareness training and operations monitoring." />
+    <!-- Preload background and fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/css/login.css">
+  </head>
+  <body>
+    <!-- Background visual layers -->
+    <div class="soc-bg-image"></div>
+    <div class="soc-overlay"></div>
+    
+    <!-- Ambient color lights -->
+    <div class="glow-node glow-node-1"></div>
+    <div class="glow-node glow-node-2"></div>
+    <div class="glow-node glow-node-3"></div>
+
+    <!-- Active background canvases -->
+    <canvas id="background-canvas"></canvas>
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- Page wrapper holding content structures -->
+    <div class="page-wrapper" id="login-page-container">
+      
+      <!-- Logo & Security Branding Header -->
+      <header class="header-container" id="brand-header">
+        <div class="header-left">
+          <div class="logo-wrapper">
+            <!-- Decorative outline square from Elegant Dark design -->
+            <div class="logo-icon-box">
+              <span class="logo-icon-text">CS</span>
+            </div>
+            <h1 class="logo-text">Cyber<span>Shield</span></h1>
+          </div>
+          <p class="tagline">Security Operations Center // Access Node v4.0.2</p>
+        </div>
+
+        <div class="header-right" id="header-metadata">
+          <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span class="status-label">System Online</span>
+          </div>
+          <div class="meta-item">Encryption: <span class="meta-val">AES-256 GCM</span></div>
+          <div class="meta-item">Node: <span class="meta-val">LND-SOC-09</span></div>
+        </div>
+      </header>
+
+      <!-- Center content: Login controls and Cyber tips -->
+      <main class="main-content" id="login-main-panel">
+        
+        <!-- Left Side decorative hero elements (Visible only on desktop/split layout) -->
+        <div class="cyber-hero-section" id="desktop-hero">
+          <h2 class="hero-title">Stay Safe.<br/><span class="hero-accent">Stay Aware.</span><br/>Stay Secure.</h2>
+          <div class="hero-divider"></div>
+        </div>
+        
+        <!-- Glassmorphism Login Card -->
+        <section class="login-card" id="auth-card">
+          <div class="card-header">
+            <h2 class="card-title">Secured Console Link</h2>
+            <p class="card-subtitle">Authorize access using your corporate credentials</p>
+          </div>
+
+          <form id="cyber-login-form" autocomplete="on">
+            <!-- Username Input (Hidden by default, shown in register mode) -->
+            <div class="form-group" id="username-field-group" style="display: none; margin-bottom: 1.25rem;">
+              <div class="input-label-wrapper">
+                <label for="username-input" class="input-label">Operator Username</label>
+              </div>
+              <div class="input-container">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <input 
+                  type="text" 
+                  id="username-input" 
+                  class="form-input" 
+                  placeholder="e.g. cyber_analyst" 
+                  autocomplete="username"
+                />
+              </div>
+            </div>
+
+            <!-- Email Input -->
+            <div class="form-group" id="email-field-group">
+              <div class="input-label-wrapper">
+                <label for="email-input" class="input-label">Identity ID / Email</label>
+              </div>
+              <div class="input-container">
+                <!-- User/Mail SVG Icon -->
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <input 
+                  type="email" 
+                  id="email-input" 
+                  class="form-input" 
+                  placeholder="name@cybershield.com" 
+                  required 
+                  autocomplete="email"
+                />
+              </div>
+            </div>
+
+            <!-- Password Input -->
+            <div class="form-group" id="password-field-group">
+              <div class="input-label-wrapper">
+                <label for="password-input" class="input-label">Security Keyphrase</label>
+              </div>
+              <div class="input-container">
+                <!-- Lock SVG Icon -->
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <input 
+                  type="password" 
+                  id="password-input" 
+                  class="form-input" 
+                  placeholder="••••••••••••" 
+                  required 
+                  autocomplete="current-password"
+                />
+                <!-- Show/Hide Password Toggle Button -->
+                <button type="button" class="password-toggle-btn" id="password-toggle" aria-label="Show password">
+                  <!-- Eye Open Icon -->
+                  <svg id="eye-icon-open" viewBox="0 0 24 24">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <!-- Eye Closed Icon (Hidden initially) -->
+                  <svg id="eye-icon-closed" viewBox="0 0 24 24" style="display: none;">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Remember Me & Forgot Password Options -->
+            <div class="form-options" id="login-options-row">
+              <label class="remember-me-label" for="remember-me-checkbox">
+                <input type="checkbox" id="remember-me-checkbox" class="custom-checkbox" />
+                <span>Keep line secure</span>
+              </label>
+              <a href="#" class="forgot-password-link" id="forgot-password-trigger">Forgot Keyphrase?</a>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn" id="submit-btn">
+              <span class="btn-spinner" id="submit-spinner"></span>
+              <span class="btn-text">INITIALIZE SECURE LOGIN</span>
+              <!-- Arrow Right SVG Icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </button>
+
+            <!-- Toggler to switch between login and registration -->
+            <div style="text-align: center; margin-top: 1.25rem; font-size: 0.825rem; font-family: var(--font-sans); color: var(--text-muted);">
+              <span id="auth-toggle-msg">Need cyber clearance?</span>
+              <a href="#" id="auth-mode-toggle" style="color: var(--neon-cyan); font-weight: 500; text-decoration: none; border-bottom: 1px dashed var(--neon-cyan); margin-left: 0.25rem; transition: color var(--transition-fast);">Create an Account</a>
+            </div>
+          </form>
+
+          <!-- Divider -->
+          <div class="divider-container">
+            <div class="divider-line"></div>
+            <span class="divider-text">Federated Identity</span>
+            <div class="divider-line"></div>
+          </div>
+
+          <!-- Social Federated Logins -->
+          <div class="social-buttons-grid" id="social-federation-grid">
+            <button type="button" class="social-btn btn-google" id="google-auth-btn" aria-label="Sign in with Google">
+              <!-- Google G Logo SVG -->
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+              </svg>
+              <span>Google SSO</span>
+            </button>
+            <button type="button" class="social-btn btn-github" id="github-auth-btn" aria-label="Sign in with GitHub">
+              <!-- GitHub Logo SVG -->
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+              </svg>
+              <span>GitHub SSO</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Cyber Safety Tip of the Day secondary panel -->
+        <article class="tip-card" id="safety-tip-container">
+          <div class="tip-title-row">
+            <div class="tip-title">
+              <!-- Shield Check SVG Icon -->
+              <svg class="tip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 11 2 2 4-4"/>
+              </svg>
+              <span>Security Tip of the Day</span>
+            </div>
+            <!-- Refresh SVG button -->
+            <button class="tip-refresh-btn" id="tip-refresh" aria-label="Load different security tip">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+            </button>
+          </div>
+          <p class="tip-content" id="tip-content">Loading daily security protocols...</p>
+        </article>
+
+      </main>
+
+      <!-- Footer UI -->
+      <footer class="footer-container" id="system-footer">
+        <ul class="footer-links">
+          <li><a href="#" class="footer-link">Privacy Policy</a></li>
+          <li><a href="#" class="footer-link">Terms of Service</a></li>
+          <li><a href="#" class="footer-link">Contact Support</a></li>
+        </ul>
+        <div class="version-tag">
+          <span class="version-dot"></span>
+          <span>CS-CONSOLE v2.14.0-SECURE</span>
+        </div>
+      </footer>
+
+    </div>
+
+    <!-- Security Notification Toast (Mock Success/Error feedback) -->
+    <div class="toast-notification" id="toast-notification" role="alert">
+      <!-- Toast Status Icon (Shield Alert SVG) -->
+      <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <div class="toast-message-col">
+        <span class="toast-title" id="toast-title">SIGNATURE SCANNING</span>
+        <span class="toast-desc" id="toast-desc">Running diagnostic integrity check.</span>
+      </div>
+    </div>
+
+    <!-- UI Decoration: Circuit lines and grid focus -->
+    <div class="cyber-decoration-circuit pointer-events-none">
+      <svg viewBox="0 0 100 100" fill="none" stroke="#00f2ff">
+        <path d="M0 80h40v20M40 80l20-20h40" stroke-width="0.5" />
+        <circle cx="40" cy="80" r="1.5" fill="#00f2ff" />
+        <circle cx="60" cy="60" r="1.5" fill="#00f2ff" />
+      </svg>
+    </div>
+    <div class="cyber-decoration-bracket pointer-events-none"></div>
+
+    <!-- Main JS entrypoint -->
+    <script type="module" src="/js/login.js"></script>
+  </body>
+</html>
