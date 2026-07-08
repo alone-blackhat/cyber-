@@ -6,7 +6,7 @@ import { createServer as createViteServer } from "vite";
 import { webcrypto } from "crypto";
 import { createServer as createHttpServer } from "http";
 import cookieParser from "cookie-parser";
-import { connectDB } from "./src/config/db.ts";
+import { connectDB, getIsConnected } from "./src/config/db.ts";
 import { pageVerifyJWT } from "./src/middleware/auth.ts";
 import authRoutes from "./src/routes/authRoutes.ts";
 import phoneRoutes from "./src/routes/phoneRoutes.ts";
@@ -243,16 +243,35 @@ setInterval(refreshCyberNewsCache, 30 * 60 * 1000);
 
 // Setup CORS with explicit origin filters
 const allowedOrigins = [
-  "http://localhost:3000",
-  "https://ais-dev-zloig3wlkf7qgel5vdnj3c-262490286171.asia-east1.run.app",
-  "https://ais-pre-zloig3wlkf7qgel5vdnj3c-262490286171.asia-east1.run.app",
-  "https://ais-dev-7jri2moqsse6vuolwd64ui-857913741347.asia-east1.run.app",
-  "https://ais-pre-7jri2moqsse6vuolwd64ui-857913741347.asia-east1.run.app"
+  "http://localhost:3000"
 ];
+
+let appUrlOrigin: string | null = null;
+if (process.env.APP_URL) {
+  try {
+    appUrlOrigin = new URL(process.env.APP_URL).origin;
+    allowedOrigins.push(appUrlOrigin);
+  } catch (_) {
+    appUrlOrigin = process.env.APP_URL;
+    allowedOrigins.push(process.env.APP_URL);
+  }
+}
+
+if (process.env.ALLOWED_ORIGINS) {
+  process.env.ALLOWED_ORIGINS.split(",").forEach(org => {
+    allowedOrigins.push(org.trim());
+  });
+}
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".run.app") || origin.startsWith("http://localhost:")) {
+    if (
+      !origin || 
+      allowedOrigins.includes(origin) || 
+      origin.endsWith(".run.app") || 
+      origin.startsWith("http://localhost:") ||
+      (appUrlOrigin && origin === appUrlOrigin)
+    ) {
       callback(null, true);
     } else {
       callback(new Error("Request blocked by CyberShield CORS Policy"));
@@ -267,6 +286,31 @@ app.use(cookieParser());
 // Initialize Passport.js middleware
 app.use(passport.initialize());
 configurePassport();
+
+// Production Health & Diagnostic Check
+app.get("/api/health", (req, res) => {
+  const isDbConnected = getIsConnected();
+  const uptimeSeconds = Math.floor(process.uptime());
+  
+  res.json({
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    uptime: `${Math.floor(uptimeSeconds / 3600)}h ${Math.floor((uptimeSeconds % 3600) / 60)}m ${uptimeSeconds % 60}s`,
+    database: {
+      provider: isDbConnected ? "MongoDB Atlas" : "Secure Local Persistent Storage (Fallback Mode)",
+      status: isDbConnected ? "connected" : "active-fallback",
+    },
+    environment: {
+      nodeEnv: process.env.NODE_ENV || "development",
+      trustProxy: app.get("trust proxy"),
+      configuredAppUrl: process.env.APP_URL || "not-set (relying on auto-detection)",
+    },
+    integrations: {
+      googleOAuth: process.env.GOOGLE_CLIENT_ID ? "configured" : "missing",
+      githubOAuth: process.env.GITHUB_CLIENT_ID ? "configured" : "missing",
+    }
+  });
+});
 
 // Authentication API Router
 app.use("/api/auth", authRoutes);
