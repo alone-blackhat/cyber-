@@ -15,6 +15,7 @@ import passport from "passport";
 import { configurePassport } from "./src/config/passport.ts";
 
 const app = express();
+app.set("trust proxy", true);
 const PORT = 3000;
 const httpServer = createHttpServer(app);
 
@@ -243,6 +244,8 @@ setInterval(refreshCyberNewsCache, 30 * 60 * 1000);
 // Setup CORS with explicit origin filters
 const allowedOrigins = [
   "http://localhost:3000",
+  "https://ais-dev-zloig3wlkf7qgel5vdnj3c-262490286171.asia-east1.run.app",
+  "https://ais-pre-zloig3wlkf7qgel5vdnj3c-262490286171.asia-east1.run.app",
   "https://ais-dev-7jri2moqsse6vuolwd64ui-857913741347.asia-east1.run.app",
   "https://ais-pre-7jri2moqsse6vuolwd64ui-857913741347.asia-east1.run.app"
 ];

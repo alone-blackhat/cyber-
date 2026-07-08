@@ -4,7 +4,9 @@ import { Strategy as GitHubStrategy } from "passport-github2";
 import { UserService } from "../models/User.ts";
 
 export function configurePassport() {
-  const appUrl = process.env.APP_URL || "http://localhost:3000";
+  const googleCallbackURL = process.env.APP_URL
+    ? `${process.env.APP_URL}/api/auth/google/callback`
+    : "/api/auth/google/callback";
 
   // --- GOOGLE STRATEGY ---
   const googleClientId = process.env.GOOGLE_CLIENT_ID;
@@ -16,8 +18,9 @@ export function configurePassport() {
         {
           clientID: googleClientId,
           clientSecret: googleClientSecret,
-          callbackURL: `${appUrl}/api/auth/google/callback`,
+          callbackURL: googleCallbackURL,
           passReqToCallback: true,
+          proxy: true,
         },
         async (req, accessToken, refreshToken, profile, done) => {
           try {
@@ -92,6 +95,9 @@ export function configurePassport() {
   // --- GITHUB STRATEGY ---
   const githubClientId = process.env.GITHUB_CLIENT_ID;
   const githubClientSecret = process.env.GITHUB_CLIENT_SECRET;
+  const githubCallbackURL = process.env.APP_URL
+    ? `${process.env.APP_URL}/api/auth/github/callback`
+    : "/api/auth/github/callback";
 
   if (githubClientId && githubClientSecret) {
     passport.use(
@@ -99,9 +105,10 @@ export function configurePassport() {
         {
           clientID: githubClientId,
           clientSecret: githubClientSecret,
-          callbackURL: `${appUrl}/api/auth/github/callback`,
+          callbackURL: githubCallbackURL,
           passReqToCallback: true,
           scope: ["user:email"], // Request emails to ensure RFC compliance
+          proxy: true,
         },
         async (req: any, accessToken: string, refreshToken: string, profile: any, done: any) => {
           try {

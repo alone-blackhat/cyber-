@@ -118,7 +118,10 @@ router.get("/google/url", (req, res) => {
   if (!googleClientId) {
     return res.status(500).json({ error: "Google OAuth is not configured on this server node." });
   }
-  const appUrl = process.env.APP_URL || "http://localhost:3000";
+  const host = req.get("X-Forwarded-Host") || req.get("host") || "localhost:3000";
+  const protocol = req.headers["x-forwarded-proto"] === "https" || req.secure ? "https" : "http";
+  const dynamicAppUrl = `${protocol}://${host}`;
+  const appUrl = process.env.APP_URL || dynamicAppUrl;
   const redirectUri = `${appUrl}/api/auth/google/callback`;
   const params = new URLSearchParams({
     client_id: googleClientId,
@@ -134,7 +137,13 @@ router.get("/google/url", (req, res) => {
 
 // --- 6. GOOGLE OAUTH CALLBACK ---
 router.get("/google/callback", (req, res, next) => {
-  passport.authenticate("google", { session: false }, (err: any, user: any, info: any) => {
+  const host = req.get("X-Forwarded-Host") || req.get("host") || "localhost:3000";
+  const protocol = req.headers["x-forwarded-proto"] === "https" || req.secure ? "https" : "http";
+  const dynamicAppUrl = `${protocol}://${host}`;
+  const appUrl = process.env.APP_URL || dynamicAppUrl;
+  const dynamicCallbackURL = `${appUrl}/api/auth/google/callback`;
+
+  passport.authenticate("google", { session: false, callbackURL: dynamicCallbackURL } as any, (err: any, user: any, info: any) => {
     if (err || !user) {
       console.error("Google Auth failure:", err, info);
       return res.redirect("/?error=" + encodeURIComponent(err?.message || "Google authentication failed"));
@@ -149,7 +158,10 @@ router.get("/github/url", (req, res) => {
   if (!githubClientId) {
     return res.status(500).json({ error: "GitHub OAuth is not configured on this server node." });
   }
-  const appUrl = process.env.APP_URL || "http://localhost:3000";
+  const host = req.get("X-Forwarded-Host") || req.get("host") || "localhost:3000";
+  const protocol = req.headers["x-forwarded-proto"] === "https" || req.secure ? "https" : "http";
+  const dynamicAppUrl = `${protocol}://${host}`;
+  const appUrl = process.env.APP_URL || dynamicAppUrl;
   const redirectUri = `${appUrl}/api/auth/github/callback`;
   const params = new URLSearchParams({
     client_id: githubClientId,
@@ -163,7 +175,13 @@ router.get("/github/url", (req, res) => {
 
 // --- 8. GITHUB OAUTH CALLBACK ---
 router.get("/github/callback", (req, res, next) => {
-  passport.authenticate("github", { session: false }, (err: any, user: any, info: any) => {
+  const host = req.get("X-Forwarded-Host") || req.get("host") || "localhost:3000";
+  const protocol = req.headers["x-forwarded-proto"] === "https" || req.secure ? "https" : "http";
+  const dynamicAppUrl = `${protocol}://${host}`;
+  const appUrl = process.env.APP_URL || dynamicAppUrl;
+  const dynamicCallbackURL = `${appUrl}/api/auth/github/callback`;
+
+  passport.authenticate("github", { session: false, callbackURL: dynamicCallbackURL } as any, (err: any, user: any, info: any) => {
     if (err || !user) {
       console.error("GitHub Auth failure:", err, info);
       return res.redirect("/?error=" + encodeURIComponent(err?.message || "GitHub authentication failed"));
