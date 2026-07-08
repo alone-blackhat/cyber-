@@ -6,6 +6,7 @@
 import { fetchCyberNews, escapeHTML } from "./news-api.js";
 import jsQR from "jsqr";
 import { initPhoneIntelligence } from "./phone-intelligence.js";
+import { initPasswordAnalyzer } from "./password-analyzer.js";
 
 document.addEventListener('DOMContentLoaded', () => {
   
@@ -81,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initQRChecker();
   initEmailSafetyChecker();
   initPhoneIntelligence();
+  initPasswordAnalyzer();
   initCommunityForum();
   initSupportConsole();
   initFeedbackConsole();

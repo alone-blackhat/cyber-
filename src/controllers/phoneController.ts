@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { PhoneNumberUtil, PhoneNumberFormat, PhoneNumberType } from "google-libphonenumber";
+import pkg from "google-libphonenumber";
+const { PhoneNumberUtil, PhoneNumberFormat, PhoneNumberType } = pkg;
 import { PhoneLookupService } from "../models/PhoneIntelligence.ts";
 import { GoogleGenAI } from "@google/genai";
 

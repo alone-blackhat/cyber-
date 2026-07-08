@@ -10,6 +10,7 @@ import { connectDB } from "./src/config/db.ts";
 import { pageVerifyJWT } from "./src/middleware/auth.ts";
 import authRoutes from "./src/routes/authRoutes.ts";
 import phoneRoutes from "./src/routes/phoneRoutes.ts";
+import passwordRoutes from "./src/routes/passwordRoutes.ts";
 import passport from "passport";
 import { configurePassport } from "./src/config/passport.ts";
 
@@ -269,6 +270,9 @@ app.use("/api/auth", authRoutes);
 
 // Phone Intelligence API Router
 app.use("/api/phone", phoneRoutes);
+
+// Password Security Analyzer API Router
+app.use("/api/password", passwordRoutes);
 
 // --- SECURE CHAT END-TO-END CRYPTOGRAPHIC BACKEND SYSTEM ---
 

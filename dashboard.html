@@ -188,6 +188,13 @@
               </svg>
               <span>Password Strength</span>
             </li>
+            <li class="menu-item" data-target="password-analyzer">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M12 8v4M12 16h.01"/>
+              </svg>
+              <span>Password Analyzer</span>
+            </li>
             <li class="menu-item" data-target="file-checker">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
@@ -2292,6 +2299,342 @@
             </div>
           </section>
 
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== VIEW 6B: PASSWORD SECURITY ANALYZER ==================== -->
+          <section class="viewport-section" id="view-password-analyzer">
+            <div class="section-banner-title">
+              <h2 class="viewport-title">Advanced Cryptographic & Password Security Analyzer</h2>
+              <p class="viewport-subtitle">Run deep k-anonymity breach audits, calculate keyboard-walk entropy bounds, and evaluate SHA-256 / bcrypt / Argon2id defense margins.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; align-items: start;" class="tool-layout-grid-wrap">
+              
+              <!-- LEFT COLUMN: INPUTS & HISTORY -->
+              <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                
+                <!-- Terminal console input -->
+                <div class="glass-section tool-card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                  <div class="section-header" style="border-bottom: 1px solid rgba(0, 255, 157, 0.1); padding-bottom: 0.5rem;">
+                    <h3 class="section-title" style="color: var(--neon-green); font-size: 0.85rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+                      <span class="pulse-dot" style="background: var(--neon-green); width: 6px; height: 6px; border-radius: 50%; display: inline-block;"></span>
+                      CRYPTOGRAPHIC INPUT CORE
+                    </h3>
+                  </div>
+
+                  <div class="form-group" style="display: flex; flex-direction: column; gap: 0.5rem; position: relative;">
+                    <label class="input-label" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Secret Keyphrase</label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                      <input type="password" id="pw-analyzer-input" class="tool-select-input" style="padding: 0.75rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.85rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(0, 255, 157, 0.15); width: 100%; color: #ffffff;" placeholder="Enter password to audit...">
+                      <button id="pw-toggle-visibility-btn" style="position: absolute; right: 0.75rem; background: none; border: none; color: var(--text-muted); cursor: pointer;" title="Toggle Plaintext View">
+                        <svg style="width: 1.1rem; height: 1.1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <button class="tool-btn" id="pw-run-audit-btn" style="background: rgba(0, 255, 157, 0.08); border-color: rgba(0, 255, 157, 0.25); color: var(--neon-green); font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <svg style="width: 0.95rem; height: 0.95rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Run Deep Forensic Sweep
+                  </button>
+                </div>
+
+                <!-- Secure audit scan history -->
+                <div class="glass-section tool-card" style="display: flex; flex-direction: column; gap: 1rem;">
+                  <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 class="section-title" style="font-size: 0.8rem; font-weight: 700;">Audit Logs Archive</h3>
+                    <button class="tool-btn" id="pw-clear-history-btn" style="padding: 0.3rem 0.6rem; font-size: 0.65rem; background: rgba(255, 75, 75, 0.08); border-color: rgba(255, 75, 75, 0.2); color: #ff4b4b; height: auto;">Scrub Logs</button>
+                  </div>
+                  <div id="pw-history-container" style="max-height: 15rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <p style="font-size: 0.7rem; color: var(--text-muted); text-align: center; margin: 2rem 0;">No diagnostic audit logs saved in active session database.</p>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- RIGHT COLUMN: RESULTS, POLICIES & HASHLAB -->
+              <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                
+                <!-- STANDBY CONTAINER -->
+                <div id="pw-standby-state" class="glass-section educational-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 35rem; gap: 1rem; padding: 2rem;">
+                  <div style="width: 4rem; height: 4rem; border-radius: 50%; background: rgba(0, 255, 157, 0.05); display: flex; align-items: center; justify-content: center; border: 1px dashed rgba(0, 255, 157, 0.2); color: var(--neon-green); margin-bottom: 0.5rem;">
+                    <svg style="width: 2rem; height: 2rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                  </div>
+                  <h3 style="font-size: 1rem; font-weight: bold; color: #ffffff;">Hacker-Style Cryptographic Sandboxing</h3>
+                  <p style="font-size: 0.75rem; color: var(--text-muted); max-width: 25rem; line-height: 1.5; margin: 0;">
+                    Awaiting keys. Enter a keyphrase in the input terminal on the left to evaluate password strength, rule adherence, crack times, cryptographic hashes, and k-anonymity breach histories.
+                  </p>
+                </div>
+
+                <!-- LOADING LOOPS -->
+                <div id="pw-loading-state" class="glass-section educational-card" style="display: none; flex-direction: column; justify-content: center; align-items: center; gap: 1.5rem; min-height: 35rem; padding: 2rem;">
+                  <div class="loader-circle" style="width: 3.5rem; height: 3.5rem; border: 3px solid rgba(0, 255, 157, 0.1); border-top-color: var(--neon-green); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                  <div style="width: 100%; max-width: 20rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <div id="pw-loading-step" style="font-size: 0.65rem; font-family: var(--font-mono); color: var(--neon-green); text-align: center; font-weight: 500; letter-spacing: 0.05em;">ESTABLISHING HIGH-ENTROPY CRYPTOGRAPHIC SANDBOX...</div>
+                    <div style="width: 100%; height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden;">
+                      <div id="pw-loading-bar" style="width: 0%; height: 100%; background: var(--neon-green); border-radius: 2px; transition: width 0.3s ease-out;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- DIAGNOSTIC RESULTS -->
+                <div id="pw-results-state" style="display: none; flex-direction: column; gap: 1.5rem;">
+                  
+                  <!-- Main metrics grid: Strength, Entropy, Breach Scanner -->
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;" class="tool-layout-grid-wrap">
+                    
+                    <!-- Brute force entropy / crack calculations -->
+                    <div class="glass-section" style="padding: 1rem; border-radius: 8px; display: flex; flex-direction: column; gap: 0.85rem;">
+                      <div style="font-size: 0.72rem; font-weight: 800; color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.4rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span>ENTROPY & CRYPTO ANALYSIS</span>
+                        <span id="pw-res-reputation" style="font-size: 0.55rem; padding: 0.2rem 0.4rem; border-radius: 4px; font-weight: bold; background: rgba(0, 255, 157, 0.1); color: var(--neon-green);">SECURE</span>
+                      </div>
+                      
+                      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.7rem;">
+                          <span style="color: var(--text-muted);">Shannon Entropy</span>
+                          <span id="pw-res-entropy" style="font-family: var(--font-mono); font-weight: 700; color: var(--neon-green);">0 bits</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.7rem;">
+                          <span style="color: var(--text-muted);">Character Pool (R)</span>
+                          <span id="pw-res-pool" style="font-family: var(--font-mono); font-weight: 700; color: #ffffff;">0 characters</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.7rem;">
+                          <span style="color: var(--text-muted);">Complexity Index</span>
+                          <span id="pw-res-complexity" style="font-family: var(--font-mono); font-weight: 700; color: #ffffff;">0%</span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem; margin-top: 0.3rem;">
+                          <span style="color: var(--text-muted); font-size: 0.65rem;">Offline GPU Brute-Force Crack Time:</span>
+                          <span id="pw-res-cracktime" style="font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem; color: #ffffff; background: rgba(255,255,255,0.03); border-radius: 4px; padding: 0.4rem; border: 1px solid rgba(255,255,255,0.05);">Instant</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- HIBP k-Anonymity Leak Scanner -->
+                    <div class="glass-section" style="padding: 1rem; border-radius: 8px; display: flex; flex-direction: column; gap: 0.85rem; justify-content: space-between;">
+                      <div style="font-size: 0.72rem; font-weight: 800; color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.4rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span>k-ANONYMITY BREACH CHECKER</span>
+                        <span style="font-size: 0.55rem; color: var(--text-muted); font-family: var(--font-mono);">SHA-1 prefix</span>
+                      </div>
+
+                      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; flex: 1; padding: 0.5rem 0;">
+                        <span id="pw-res-breach-indicator" style="font-size: 1.8rem; font-weight: 900; font-family: var(--font-mono); color: var(--neon-green); letter-spacing: -0.02em;">0</span>
+                        <span style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; text-align: center; letter-spacing: 0.05em; font-weight: bold;">Public Data Breaches Found</span>
+                      </div>
+
+                      <p style="font-size: 0.58rem; color: var(--text-muted); margin: 0; line-height: 1.4; text-align: center; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 0.4rem;">
+                        Checking hash blocks locally using secure k-Anonymity. Plaintext is never sent over any networks.
+                      </p>
+                    </div>
+
+                  </div>
+
+                  <!-- Real-time Strength Meter bar -->
+                  <div class="glass-section" style="padding: 1rem; border-radius: 8px; display: flex; flex-direction: column; gap: 0.6rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <span style="font-size: 0.7rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 0.4rem;">
+                        Strength Evaluation Level: 
+                        <span id="pw-strength-tag" style="color: var(--neon-green); font-weight: 800; text-transform: uppercase;">Very Strong</span>
+                      </span>
+                      <span id="pw-complexity-percentage" style="font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem; color: var(--neon-green);">0%</span>
+                    </div>
+
+                    <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; position: relative; overflow: hidden;">
+                      <div id="pw-strength-bar" style="width: 0%; height: 100%; background: var(--neon-green); border-radius: 3px; transition: width 0.5s ease-out, background-color 0.5s;"></div>
+                    </div>
+                  </div>
+
+                  <!-- Policy compliance rule grid -->
+                  <div class="glass-section" style="padding: 1.25rem; border-radius: 8px; display: flex; flex-direction: column; gap: 0.85rem;">
+                    <div style="font-size: 0.72rem; font-weight: 800; color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.4rem;">PASSWORD POLICY CONFORMITY MATRIX</div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;" id="pw-rules-grid">
+                      <div class="pw-rule-item" data-rule="minLength" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.68rem; color: var(--text-muted);">
+                        <span class="status-marker" style="font-family: var(--font-mono); font-weight: bold; color: #ff4b4b;">✕</span>
+                        <span>Length Bounds (8+ chars)</span>
+                      </div>
+                      <div class="pw-rule-item" data-rule="hasUpper" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.68rem; color: var(--text-muted);">
+                        <span class="status-marker" style="font-family: var(--font-mono); font-weight: bold; color: #ff4b4b;">✕</span>
+                        <span>Uppercase Letters (A-Z)</span>
+                      </div>
+                      <div class="pw-rule-item" data-rule="hasLower" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.68rem; color: var(--text-muted);">
+                        <span class="status-marker" style="font-family: var(--font-mono); font-weight: bold; color: #ff4b4b;">✕</span>
+                        <span>Lowercase Letters (a-z)</span>
+                      </div>
+                      <div class="pw-rule-item" data-rule="hasDigit" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.68rem; color: var(--text-muted);">
+                        <span class="status-marker" style="font-family: var(--font-mono); font-weight: bold; color: #ff4b4b;">✕</span>
+                        <span>Numerical Digits (0-9)</span>
+                      </div>
+                      <div class="pw-rule-item" data-rule="hasSpecial" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.68rem; color: var(--text-muted);">
+                        <span class="status-marker" style="font-family: var(--font-mono); font-weight: bold; color: #ff4b4b;">✕</span>
+                        <span>Symbols / Special Characters</span>
+                      </div>
+                      <div class="pw-rule-item" data-rule="noRepeats" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.68rem; color: var(--text-muted);">
+                        <span class="status-marker" style="font-family: var(--font-mono); font-weight: bold; color: #ff4b4b;">✕</span>
+                        <span>Anti-Character Repetitions</span>
+                      </div>
+                      <div class="pw-rule-item" data-rule="noSequentials" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.68rem; color: var(--text-muted);">
+                        <span class="status-marker" style="font-family: var(--font-mono); font-weight: bold; color: #ff4b4b;">✕</span>
+                        <span>Anti-Sequential Series</span>
+                      </div>
+                      <div class="pw-rule-item" data-rule="noKeyboardPatterns" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.68rem; color: var(--text-muted);">
+                        <span class="status-marker" style="font-family: var(--font-mono); font-weight: bold; color: #ff4b4b;">✕</span>
+                        <span>Anti-Keyboard Row Walking</span>
+                      </div>
+                      <div class="pw-rule-item" data-rule="noDictionaryMatch" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.68rem; color: var(--text-muted);">
+                        <span class="status-marker" style="font-family: var(--font-mono); font-weight: bold; color: #ff4b4b;">✕</span>
+                        <span>Anti-Dictionary Collision</span>
+                      </div>
+                      <div class="pw-rule-item" data-rule="maxLength" style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.68rem; color: var(--text-muted);">
+                        <span class="status-marker" style="font-family: var(--font-mono); font-weight: bold; color: #ff4b4b;">✕</span>
+                        <span>Length Cap Limit (&le; 128)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Hash comparison panel -->
+                  <div class="glass-section" style="padding: 1.25rem; border-radius: 8px; display: flex; flex-direction: column; gap: 0.85rem;">
+                    <div style="font-size: 0.72rem; font-weight: 800; color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.4rem; display: flex; justify-content: space-between; align-items: center;">
+                      <span>EDUCATIONAL CRYPTOGRAPHIC HASH GENERATION</span>
+                      <span style="font-size: 0.6rem; color: var(--neon-green); font-family: var(--font-mono);">Read-Only sandbox</span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 1rem;" id="pw-hashes-container">
+                      <!-- Filled by JS -->
+                    </div>
+                  </div>
+
+                  <!-- Report timing and print -->
+                  <div style="display: flex; justify-content: space-between; font-size: 0.62rem; font-family: var(--font-mono); color: var(--text-muted); padding: 0 0.25rem;">
+                    <span>Audit Core: <span id="pw-res-timestamp">-</span></span>
+                    <span>API Pipeline: <span id="pw-res-status" style="color: var(--neon-green);">STANDBY_MODE</span></span>
+                  </div>
+
+                  <div style="display: flex; gap: 0.75rem;">
+                    <button class="tool-btn" id="pw-btn-copy-report" style="flex: 1; background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.05); color: #ffffff;">
+                      <svg style="width: 0.85rem; height: 0.85rem; display: inline; margin-right: 0.35rem; vertical-align: text-bottom;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M8 7v8a2 2 0 0 0 2 2h6M8 7V5a2 2 0 0 1 2-2h4.586A1 1 0 0 1 15 3.414l4 4A1 1 0 0 1 19.586 8V15a2 2 0 0 1-2 2h-2M8 7H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-2"/></svg>
+                      Copy Audit Report
+                    </button>
+                    <button class="tool-btn" id="pw-btn-export-pdf" style="flex: 1;">
+                      <svg style="width: 0.85rem; height: 0.85rem; display: inline; margin-right: 0.35rem; vertical-align: text-bottom;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg>
+                      Export Forensic Report
+                    </button>
+                  </div>
+
+                </div>
+
+                <!-- SECONDARY TOOLS ROW: PASSWORD GENERATOR & HASH VERIFIER -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;" class="tool-layout-grid-wrap">
+                  
+                  <!-- PASSWORD GENERATOR CORE -->
+                  <div class="glass-section" style="padding: 1.25rem; border-radius: 8px; display: flex; flex-direction: column; gap: 0.85rem;">
+                    <div style="font-size: 0.72rem; font-weight: 800; color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.4rem;">TACTICAL ENTROPY GENERATOR</div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <label class="input-label" style="font-size: 0.65rem;">Keyphrase Length</label>
+                        <select id="gen-length" class="tool-select-input" style="padding: 0.35rem; font-size: 0.65rem; border-radius: 4px; border-color: rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); width: 4.5rem; text-align: center;">
+                          <option value="12">12 Chars</option>
+                          <option value="16" selected>16 Chars</option>
+                          <option value="20">20 Chars</option>
+                          <option value="32">32 Chars</option>
+                        </select>
+                      </div>
+
+                      <div style="display: flex; flex-direction: column; gap: 0.5rem; margin: 0.2rem 0;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                          <span style="font-size: 0.65rem; color: var(--text-muted);">Include Uppercase</span>
+                          <input type="checkbox" id="gen-upper" checked style="accent-color: var(--neon-green);">
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                          <span style="font-size: 0.65rem; color: var(--text-muted);">Include Lowercase</span>
+                          <input type="checkbox" id="gen-lower" checked style="accent-color: var(--neon-green);">
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                          <span style="font-size: 0.65rem; color: var(--text-muted);">Include Numbers</span>
+                          <input type="checkbox" id="gen-digits" checked style="accent-color: var(--neon-green);">
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                          <span style="font-size: 0.65rem; color: var(--text-muted);">Include Symbols</span>
+                          <input type="checkbox" id="gen-specials" checked style="accent-color: var(--neon-green);">
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                          <span style="font-size: 0.65rem; color: var(--text-muted);">Exclude Similar Chars</span>
+                          <input type="checkbox" id="gen-exclude-similar" style="accent-color: var(--neon-green);">
+                        </div>
+                      </div>
+
+                      <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 0.5rem; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+                        <span id="gen-output-text" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--neon-green); font-weight: bold; overflow-x: auto; white-space: nowrap; flex: 1;">Generate key below...</span>
+                        <button id="gen-copy-btn" class="tool-btn" style="padding: 0.25rem 0.5rem; height: auto; font-size: 0.6rem; display: none;">Copy</button>
+                      </div>
+
+                      <button class="tool-btn" id="gen-trigger-btn" style="background: rgba(0, 255, 157, 0.05); border-color: rgba(0, 255, 157, 0.15); color: var(--neon-green); font-size: 0.7rem; padding: 0.5rem;">
+                        Generate New Secret Key
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- HASH VERIFICATION LAB -->
+                  <div class="glass-section" style="padding: 1.25rem; border-radius: 8px; display: flex; flex-direction: column; gap: 0.85rem;">
+                    <div style="font-size: 0.72rem; font-weight: 800; color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.4rem;">HASH AUTHENTICITY TERMINAL</div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                      <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                        <label class="input-label" style="font-size: 0.65rem;">Plaintext Keyphrase</label>
+                        <input type="text" id="verify-plaintext" class="tool-select-input" style="padding: 0.45rem; font-family: var(--font-mono); font-size: 0.7rem;" placeholder="Plaintext password...">
+                      </div>
+
+                      <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                        <label class="input-label" style="font-size: 0.65rem;">Compare Target Hash</label>
+                        <input type="text" id="verify-hash" class="tool-select-input" style="padding: 0.45rem; font-family: var(--font-mono); font-size: 0.7rem;" placeholder="SHA256, SHA512, bcrypt, or Argon2...">
+                      </div>
+
+                      <div id="verify-feedback-container" style="display: none; padding: 0.5rem; border-radius: 6px; font-family: var(--font-mono); font-size: 0.65rem; border: 1px solid rgba(255,255,255,0.05); text-align: center;">
+                        <!-- Filled dynamically -->
+                      </div>
+
+                      <button class="tool-btn" id="verify-trigger-btn" style="padding: 0.5rem; font-size: 0.7rem;">
+                        Verify Hash Authenticity
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- DEFENSE ADVISER PORTAL -->
+                <div class="glass-section" style="padding: 1.25rem; border-radius: 8px; display: flex; flex-direction: column; gap: 0.85rem;">
+                  <div style="font-size: 0.72rem; font-weight: 800; color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.4rem;">DEFENSE ADVISORY & STRATEGIC RECOMMENDATIONS</div>
+                  
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;" class="tool-layout-grid-wrap">
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 0.75rem; border-radius: 6px;">
+                      <h4 style="font-size: 0.72rem; font-weight: bold; color: var(--neon-green); margin-bottom: 0.25rem;">Use Lengthy Passphrases</h4>
+                      <p style="font-size: 0.6rem; color: var(--text-muted); line-height: 1.4;">Combine 4 or more random non-related words (e.g. <code>correcthorsebatterystaple</code>). This increases the character combinations index exponentially.</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 0.75rem; border-radius: 6px;">
+                      <h4 style="font-size: 0.72rem; font-weight: bold; color: var(--neon-green); margin-bottom: 0.25rem;">Multi-Factor Authentication (MFA)</h4>
+                      <p style="font-size: 0.6rem; color: var(--text-muted); line-height: 1.4;">Always toggle on Hardware tokens or Authenticator apps. It invalidates the absolute efficacy of credentials-only hacks.</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 0.75rem; border-radius: 6px;">
+                      <h4 style="font-size: 0.72rem; font-weight: bold; color: var(--neon-green); margin-bottom: 0.25rem;">Avoid Reuse Behaviors</h4>
+                      <p style="font-size: 0.6rem; color: var(--text-muted); line-height: 1.4;">Never map the same key on separate domains. A minor breach on a secondary low-defense blog exposes your high-priority banking ledger.</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); padding: 0.75rem; border-radius: 6px;">
+                      <h4 style="font-size: 0.72rem; font-weight: bold; color: var(--neon-green); margin-bottom: 0.25rem;">Adopt Password Managers</h4>
+                      <p style="font-size: 0.6rem; color: var(--text-muted); line-height: 1.4;">Leverage decentralized password vaults (e.g. Bitwarden or KeePassXC) to generate and store cryptographic random strings easily.</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </section>
+
           <!-- ==================== VIEW 7: FILE SAFETY CHECKER ==================== -->
           <section class="viewport-section" id="view-file-checker">
             <div class="section-banner-title">
@@ -2826,6 +3169,23 @@
                   </p>
                 </div>
                 <button class="tool-btn" style="width: 100%;" onclick="document.querySelector('.menu-item[data-target=\'phone-intelligence\']').click();">Boot OSINT Engine</button>
+              </div>
+
+              <!-- Card 8: Password Security Analyzer -->
+              <div class="glass-section" style="display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem;">
+                <div>
+                  <div style="width: 2.8rem; height: 2.8rem; border-radius: 8px; background: rgba(0, 255, 157, 0.1); display: flex; align-items: center; justify-content: center; color: var(--neon-green); margin-bottom: 1rem;">
+                    <svg style="width: 1.4rem; height: 1.4rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      <path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                  </div>
+                  <h4 style="font-size: 0.88rem; font-weight: 700; color: #ffffff; margin-bottom: 0.35rem;">Password Security Analyzer</h4>
+                  <p style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 1rem;">
+                    Analyze password strength, policy validation, offline GPU crack-times, SHA-256/bcrypt/Argon2 hashes, and run k-anonymity breach diagnostics.
+                  </p>
+                </div>
+                <button class="tool-btn" style="width: 100%;" onclick="document.querySelector('.menu-item[data-target=\'password-analyzer\']').click();">Boot Analyzer Core</button>
               </div>
 
             </div>
